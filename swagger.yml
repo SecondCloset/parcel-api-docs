@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
   version: 'v1'
-  title: "BoxKnight"
-  description: Welcome to the BoxKnight API Documentation. You can use the BoxKnight API to requests rates, create an order, delete an order, retrieve a shipping label.
+  title: "GoBolt Parcel"
+  description: Welcome to the GoBolt Parcel API Documentation. You can use the GoBolt API to requests rates, create an order, delete an order, retrieve a shipping label.
   x-logo:
-    url: "https://merchant.boxknight.com/static/media/boxknight_header_logo.cd00e5c0.png"
+    url: "https://gobolt.com/wp-content/themes/sc-business-marketing-website/bolt-assets/GoBolt-Primary-for-White-Bg.png"
     background: "#ffffff"
-host: api.boxknight.com
+host: api-parcel.gobolt.com
 basePath: /v1
 tags:
 - name: "Service Accounts & Tokens"
