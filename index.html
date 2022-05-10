@@ -27,16 +27,7 @@
   </head>
 
   <body>
-    <div id="redoc-container"></div>
-    <script>
-      Redoc.init(
-        "https://raw.githubusercontent.com/hasan-ahmed/parcel-api-docs/main/swagger.yml",
-        {
-          theme: { colors: { primary: { main: "#58AFC3" }, rightPanel: { backgroundColor: "#00282B" } } },
-          hideDownloadButton: true
-        },
-        document.getElementById("redoc-container")
-      );
-    </script>
+    <redoc spec-url='https://raw.githubusercontent.com/hasan-ahmed/parcel-api-docs/main/swagger.yml'></redoc>
+    <script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>
   </body>
 </html>
