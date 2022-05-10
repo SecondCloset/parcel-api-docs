@@ -1,0 +1,1272 @@
+swagger: '2.0'
+info:
+  version: 'v1'
+  title: "BoxKnight"
+  description: Welcome to the BoxKnight API Documentation. You can use the BoxKnight API to requests rates, create an order, delete an order, retrieve a shipping label.
+  x-logo:
+    url: "https://merchant.boxknight.com/static/media/boxknight_header_logo.cd00e5c0.png"
+    background: "#ffffff"
+host: api.boxknight.com
+basePath: /v1
+tags:
+- name: "Service Accounts & Tokens"
+  description: "Everything about authentication for making API requests"
+- name: "Rates"
+  description: "Everything about shipping rates"
+- name: "Orders"
+  description: "Everything about orders. To have a direct link to our tracking using an `orderId`, you can use `https://www.boxknight.com/tracking?trackingNo={orderId}`"  
+- name: "Pickups"
+  description: "Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so."
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  OAuth2:
+    type: oauth2
+    flow: application
+    tokenUrl: /auth/token
+    scopes: {}
+    description: >-
+      The BoxKnight API uses OAuth 2.0 with Client Credentials grant type to secure endpoints.
+      Before every request, you must make a POST request to the `/auth/token` endpoint to generate an access `token`.
+      You must then include this token as an `Authorization` header in every authenticated request.
+  Authorization-Header:
+     type: apiKey
+     in: header
+     name: Authorization 
+     description: >- 
+       Once you've generated a `token` with the first step of the OAuth 2.0 flow, you must include a `Authorization` header
+       with the token to make authenticated requests to secure endpoints.
+
+paths:
+  /auth/token:
+    x-summary: Authentication Token
+    post:
+      tags:
+        - "Service Accounts & Tokens"
+      description: >-
+        Exchange your username and password for a token that you may include in the header of your requests.
+      x-summary: Generate Token
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AuthTokenRequest'
+      responses:
+        200:
+          description: 'Sucessful Response'
+          schema: 
+            $ref: '#/definitions/AuthTokenResponse'
+  /users/service:
+    x-summary: Service account
+    post:
+      tags:
+        - "Service Accounts & Tokens"
+      description: >-
+        Use your admin token to create a service account in order to use our api
+      summary: Create Service account
+      security:
+        - Oauth2: []
+        - Authorization-Header: []
+      responses:
+        200:
+          description: 'Sucessful Response'
+          schema: 
+            $ref: '#/definitions/ServiceAccountResponse'
+  /rates:
+    x-summary: Rates
+    post:
+      tags:
+        - "Rates"
+      description: >-
+        This endpoint retrieves a list of all the shipping rates for a given potential order in accordance to the pricing 
+        structure established when creating your merchant organization. If either the origin postal code or
+        destination postal code is not in BoxKnight's serviceable area, the endpoint will return an empty list.
+      summary: Retrieve Rates
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RateOptions'
+      security:
+        - Oauth2: []
+        - Authorization-Header: []
+      responses: 
+        200: 
+          description: ''
+          schema:
+            $ref: '#/definitions/ArrayOfRates'
+  /rates/windows:
+    x-summary: Windows
+    get:
+      tags:
+        - "Windows"
+      description: >-
+        This endpoint retrieves a list of all the next available windows of a scheduled delivery for the merchant. 
+      summary: Retrieve Scheduled Windows
+      parameters:
+        - name: originPostalCode
+          in: query
+          description: Postal code of the destination address
+          required: true
+          type: string
+        - name: postalCode
+          in: query
+          description: Postal code of the destination address
+          required: true
+          type: string
+      security:
+        - Oauth2: []
+        - Authorization-Header: []
+      responses: 
+        200: 
+          description: ''
+          schema:
+            $ref: '#/definitions/ArrayOfWindows'
+  /labels/{orderId}:
+    x-summary: Labels
+    get:
+      tags:
+        - "Labels"
+      description: >-
+        This endpoint retrieves a label (zpl, pdf or pdf_letter) from an orderId. The pdf_letter format fits a full standard letter page with a dotted line to cut the label.
+      summary: Retrieve Labels
+      parameters:
+      - name: orderId
+        in: path
+        description: The id of the order that we want to get the label from
+        required: true
+        type: string
+      - name: format
+        in: query
+        description: format of the label (zpl, pdf or pdf_letter)
+        required: true
+        type: string
+      security:
+        - Oauth2: []
+        - Authorization-Header: []
+      responses: 
+        200: 
+          description: 'the label in zpl or pdf file'
+  /orders:
+    x-summary: Orders
+    post:
+      tags:
+        - "Orders"
+      description: >-
+        This endpoint creates a new order to be delivered by BoxKnight. This operation is treated as a long running task. As soon as your request is validated,
+        you will receive a `200 OK` response with the order `id` while processing continues in the background. 
+      summary: Create a New Order
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/OrderCreateRequest'
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/OrderCreateSuccessResponse'
+    get:
+      tags:
+        - "Orders"
+      description: >-
+        This endpoint is doing a batch get all the orders associated with the service account
+      summary: Get multiple orders
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: limit
+        in: query
+        description: limit of results
+        required: false
+        type: number
+      - name: startAt
+        in: query
+        description: last order id, don't put it when first requested it 
+        required: false
+        type: string
+      - name: createdAt
+        in: query
+        description: last order createdAt, don't put it when first requested it 
+        required: false
+        type: string
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/ArrayOfOrders'
+  
+  /orders/{id}:
+    x-summary: Get and Delete Order
+    get:
+      tags:
+        - "Orders"
+      description: >-
+        This endpoint get the order's informations.
+      summary: Get Order by Id
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: id
+        in: path
+        description: The id of the order that will be created
+        required: true
+        type: string
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/Order"
+          description: 'Successfull response'
+    
+    delete:
+      tags:
+        - "Orders"
+      description: >-
+        This endpoint delete the order's informations.
+      summary: Delete Order by Id
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: id
+        in: path
+        description: The id of the order that will be deleted
+        required: true
+        type: string
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/Order"
+          description: 'Successfull response'
+
+  /orders/{id}/window:
+    x-summary: Update order delivery window
+    patch:
+      tags:
+        - "Orders"
+      description: >-
+        This endpoint modify the delivery window of the order.
+      summary: Update order delivery window
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: id
+        in: path
+        description: The id of the order that will be updated
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/WindowPatchingRequest'
+      responses:
+        200:
+          description: 'Successfull response'
+
+
+  /orders/pickups:
+    x-summary: Pickups
+    post:
+      tags:
+        - "Pickups"
+      description: >-
+        This endpoint creates a new pickup to be delivered by BoxKnight. 
+        -- Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so. --
+      summary: Create a New Pickup
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PickupCreateRequest'
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/Pickup'
+  
+  /orders/pickups/{id}:
+    x-summary: Get and Delete Pickup
+    get:
+      tags:
+        - "Pickups"
+      description: >-
+        This endpoint get the pickup's informations. 
+        -- Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so. --
+      summary: Get Pickup by Id
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: id
+        in: path
+        description: The id of the pickup that will be created
+        required: true
+        type: string
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/Pickup"
+          description: 'Successfull response'
+
+    delete:
+      tags:
+        - "Pickups"
+      description: >-
+        This endpoint delete the pickup's informations. 
+        -- Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so. -- 
+      summary: Delete Pickup by Id
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: id
+        in: path
+        description: The id of the pickup that will be deleted
+        required: true
+        type: string
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/Pickup"
+          description: 'Successfull response'
+  /orders/pickups/{id}/orderIds:
+    x-summary: Patch Pickup's orderIds
+    patch:
+      tags:
+        - "Pickups"
+      description: >-
+        This endpoint patch the pickup's orderIds, it will replace the list from the pickup to the new provided list. 
+        -- Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so. --
+      summary: Patch Pickup OrderIds
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: id
+        in: path
+        description: The id of the pickup that will be created
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/PatchPickupOrderIdsReq'
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/Pickup"
+          description: 'Successfull response'
+          
+definitions:
+  Label:
+    title: Label
+    type: object
+    properties:
+      labelUrl:
+        type: string
+        description: The direct URL of the shipping label.
+        example: https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-123456.pdf
+  Recipient:
+    title: Recipient
+    type: object
+    properties:
+      name:
+        type: string
+        description: The full name of the recipient.
+        example: Charles Carmichael
+      phone: 
+        type: string
+        description: The phone number of the recipient in the following format +1<area code><10 digit phone number>
+        pattern: '^[+]1\d{10}$'
+        example: '+15145573849'
+      notes:
+        type: string
+        description: Notes relating spoecifically to the recipient
+        example: Do not text, call instead.
+      email:
+        type: string
+        description: email of the recipient
+        example: charles.carmichael@boxknight.com
+    required:
+      - name
+      - phone
+  Address:
+    title: Address
+    type: object
+    properties:
+      street:
+        type: string
+        description: The steet number and street name of the address. If needed, the street number postfix can be included as well.
+        example: 4455A Boul. Poirier
+      unit:
+        type: string
+        description: The unit, apartment and/or business name of the address. This property is not parsed during the geolocation of the address and can be descriptive.
+        example: unit204 - BoxKnight HQ
+      city:
+        type: string
+        description: The city or municipality of the address.
+        example: Montreal
+      province:
+        type: string
+        description: The province of the address. Can be written in short form (i.e. QC)
+        example: Quebec
+      country:
+        type: string
+        description: The country of the address. Can be written in shor form (i.e. CA)
+        example: Canada
+      postalCode:
+        type: string
+        description: The postal code of the address.
+        example: H4R 2A4
+      isBusinessAddress:
+        type: boolean
+        description: This optional field let's us know if the recipient address is a business address. This allows us to do our best to ensure that the delivery is completed during business hours, or retrieve an alternate address from the recipient.The postal code of the address.
+        example: true
+    required:
+      - street
+      - city
+      - province
+      - country
+      - postalCode
+  Geocoded_Address:
+    title: Address
+    type: object
+    properties:
+      number: 
+        type: string
+        description: The street number of the address. 
+        example: 1234
+      street:
+        type: string
+        description: The street name of the address. 
+        example: Boul. Poirier
+      city:
+        type: string
+        description: The city or municipality of the address.
+        example: Montreal
+      province:
+        type: string
+        description: The province of the address. Can be written in short form (i.e. QC)
+        example: Quebec
+      country:
+        type: string
+        description: The country of the address. Can be written in shor form (i.e. CA)
+        example: Canada
+      postalCode:
+        type: string
+        description: The postal code of the address.
+        example: H4R 2A4
+      sublocality:
+        type: string
+        description: The sublocality within a city.
+        example: "Communauté-Urbaine-de-Montréal"
+      location:
+        type: object
+        description: The GPS location of that address
+        $ref: '#/definitions/Location'
+  Location:
+    title: Location
+    type: object
+    properties:
+      lat:
+        type: number
+        description: The lattitude of the address
+        example: 45.4755722
+      lng:
+        type: number
+        description: The longitude of the address
+        example: -73.61911979999999
+  Rate:
+    title: Rate
+    type: object
+    properties:
+      price: 
+        type: number
+        format: double
+        description: The price for the rate in CAD.
+        example: 7.95
+      service:
+        type: string
+        description: A code representing the service level for the rate. Possible values are `SAMEDAY`, `NEXTDAY` and `SCHEDULED`
+        example: "SAMEDAY"
+      name:
+        type: string
+        description: The human readable name for the rate.
+        example: "Boxknight Same-Day Delivery"
+      description: 
+       type: string
+       description: A description of the service provided by this rate and the estimated delivery date.
+       example: "Get your package before the end of the day (2019-10-29)"
+      estimateDay:
+       type: string
+       description: The estimate date of delivery depending on merchant
+       example: "2019-10-29"
+
+  TimeWindow:
+    title: TimeWindow
+    type: object
+    properties:
+      timeStart:
+        description: Start time of a specific window (HH:mm)
+        type: string
+        example: '10:00'
+      timeEnd:
+        description: End time of a specific window (HH:mm)
+        type: string
+        example: '22:00'
+
+  SizeOptions:
+    title: SizeOptions
+    type: object
+    description: The size options for the order. Will return empty array if oversized. The maximum size is 85 inches (215.9cm) in size calculated by using the formula "length + grith (height*2 + width*2)"".
+    properties:
+      length:
+        type: integer
+        format: int32
+        description: The length of the package
+        example: 20
+      width:
+        type: integer
+        format: int32
+        description: The width of the package
+        example: 15
+      height:
+        type: integer
+        format: int32
+        description: The height of the package
+        example: 15
+      unit:
+        type: string
+        description: The unit of measurement for the package. Can be either `cm` or `inch`.
+        example: inch
+    required:
+      - length
+      - width
+      - height
+      - unit
+
+  ArrayOfPackages:
+    type: array
+    description: Array of packages which contains the package informations for size and weight.
+    items:
+      type: object
+      properties:
+        refNumber:
+          type: string
+          description: The reference number of the package.
+          example: '12345'
+        weightOptions:
+          type: object
+          properties:
+            weight:
+              type: number
+              format: double
+              description: The weight of the package.
+              example: 2.5
+            unit:
+              type: string
+              description: The unit of measurement for the package. Can be either `kg` or `lb`.
+              example: kg
+        sizeOptions:
+          type: object
+          properties:
+            length:
+              type: integer
+              format: int32
+              description: The length of the package.
+              example: 20
+            width:
+              type: integer
+              format: int32
+              description: The width of the package.
+              example: 15
+            height:
+              type: integer
+              format: int32
+              description: The height of the package.
+              example: 15
+            unit:
+              type: string
+              description: The unit of measurement for the package. Can be either `cm` or `inch`.
+              example: inch
+
+  ArrayOfSizeOptions:
+    type: array
+    description: The size options for the order. Will return empty array if one of the package is oversized. The maximum size is 85 inches (215.9cm) in size calculated by using the formula "length + grith (height*2 + width*2)"".
+    items:
+      type: object
+      properties:
+        length:
+          type: integer
+          format: int32
+          description: The length of the package
+          example: 20
+        width:
+          type: integer
+          format: int32
+          description: The width of the package
+          example: 15
+        height:
+          type: integer
+          format: int32
+          description: The height of the package
+          example: 15
+        unit:
+          type: string
+          description: The unit of measurement for the package. Can be either `cm` or `inch`.
+          example: inch
+
+  WeightOptions:
+    title: WeightOptions
+    type: object
+    description: The weight options for the order. Will return empty array if overweight. Maximum weight is 44 lbs (20 kg).
+    properties:
+      weight:
+        type: integer
+        format: int32
+        description: The weight of the package
+        example: 20
+      unit:
+        type: string
+        description: The unit of weight for the package. Can be either `lb` or `kg`.
+        example: lb
+    required:
+      - weight
+      - unit
+  
+  ArrayOfWeightOptions:
+    type: array
+    description: The weight options for the order. Will return empty array if one of the package overweight. Maximum weight is 44 lbs (20 kg).
+    items:
+      type: object
+      properties:
+        weight:
+          type: integer
+          format: int32
+          description: The weight of the package
+          example: 20
+        unit:
+          type: string
+          description: The unit of weight for the package. Can be either `lb` or `kg`.
+          example: lb
+
+  RateOptions:
+    title: Rate options
+    type: object
+    required:
+      - postalCode
+    properties:
+      postalCode:
+        description: The postal code of the recipient of the order
+        type: string
+        example: 'H4X1Z5'
+      originPostalCode:
+        description: The origin postal code for the order. If this parameter is omitted, it will default to the pickup location set up in your merchant organization.
+        type: string
+        example: 'H4R2A4'  
+      packages:
+        type: array
+        $ref: '#/definitions/ArrayOfPackages' 
+
+  OrderCreateRequest:
+    title: Order Request
+    type: object
+    required:
+      - recipient
+      - recipientAddress
+      - originAddress
+      - packageCount
+      - signatureRequired
+    properties:
+      recipient:
+        type: object
+        description: The recipient of the order to be delivered.
+        $ref: '#/definitions/Recipient'
+      recipientAddress:
+        type: object
+        description: The addres of the recipient.
+        $ref: '#/definitions/Address'
+      originAddress:
+        type: object
+        description: The addres of where the order should be picked up from
+        $ref: '#/definitions/Address'
+      packageCount:
+        type: integer
+        format: int32
+        description: The number of separate packagesto be delivered for this order.
+        example: 3
+      service:
+        type: string
+        default: "NEXTDAY"
+        description: >- 
+          The service with which to create the order, which will determine the price and speed of the delivery.
+          The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
+          This can be the `service` from the GET /rates response.
+        example: 'SAMEDAY'
+      notes:
+        type: string
+        description: Any notes related specifically to the destination address.
+        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
+      refNumber:
+        type: string
+        description: A reference number from your side that we can use to contact you about the order
+        example: shopifyid1234
+      merchantDisplayName:
+        type: string
+        description: A display name that's going to be shown in the order's label
+        example: Metro Fleury No 2
+      signatureRequired:
+        type: boolean
+        description: (Deactivated for Covid-19) Always set to false. Flag to set signature required for this order
+        example: false
+      packages:
+        type: array
+        $ref: '#/definitions/ArrayOfPackages'
+  WindowPatchingRequest:
+    title: Order window update
+    type: object
+    properties:
+      completeAfter:
+        type: number
+        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        example: 1578439750000
+      completeBefore:
+        type: number
+        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        example: 1578439950000
+        
+          
+  PickupCreateRequest:
+    title: Pickup Request
+    type: object
+    required:
+      - recipient
+      - recipientAddress
+      - packageCount
+    properties:
+      recipient:
+        type: object
+        description: The recipient of the order to be delivered.
+        $ref: '#/definitions/Recipient'
+      recipientAddress:
+        type: object
+        description: The addres of the recipient.
+        $ref: '#/definitions/Address'
+      completeAfter:
+        type: number
+        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        example: 1578439750000
+      completeBefore:
+        type: number
+        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        example: 1578439950000
+      packageCount:
+        type: integer
+        format: int32
+        description: The number of separate packagesto be delivered for this order.
+        example: 3
+      notes:
+        type: string
+        description: Any notes related specifically to the destination address.
+        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
+      orderIds:
+        type: array
+        items:
+          type: string
+        description: A list of orderIds that this pickup is related to.
+        example: ["93e11b39-0af8-40bb-742a-912375a09743","43e11a39-0af8-40bb-742a-962345z07582","93easle9-0af8-43bb-742a-962345z09623"]
+        
+  OrderCreateSuccessResponse:
+    title: Order Create Success Response
+    type: object
+    properties:
+      id:
+        type: string
+        description: The id of the order that will be created
+        example: '11a7838-s74hhd8004-343398583d-33895'
+  Order:
+    title: Order object
+    type: object
+    properties:
+      id:
+        type: string
+        description: The order's id
+        example: "93e11b39-0af8-40bb-742a-912375a09743"
+      createdAt:
+        type: string
+        description: Datetime of the order's creation in ISO time
+        example: "2019-10-25T22:56:06.000Z"
+      createdBy:
+        type: string
+        description: Service account's id
+        example: "93e66b39-0uf8-40bb-742a-911235a09743"
+      merchantId:
+        type: string
+        description: The merchant's id
+        example: "13e11b39-0uf8-40bb-742a-913125a09743"
+      orderStatus: 
+        type: string
+        description: >-
+          The current status of the order, could be 
+          CREATED, GEOCODED, PICKUP_READY, 
+          PICKUP_ASSIGNED, PICKUP_EN_ROUTE, 
+          PICKUP_COMPLETED, DELIVERY_ASSIGNED, 
+          DELIVERY_EN_ROUTE, DELIVERY_COMPLETED
+        example: 'GEOCODED'
+      scanningRequired:
+        type: boolean
+        description: Tell if the order need scanning,
+        example: true
+      validAddress: 
+        type: boolean
+        description: The address validity according to our validator.
+        example: true
+      labelUrl:
+        type: string
+        description: The URL to download the order's ZPL label
+        example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.zpl"
+      pdfLabelUrl:
+        type: string
+        description: The URL to download the order's PDF label
+        example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.pdf"
+      recipient:
+        type: object
+        description: The recipient of the order to be delivered.
+        $ref: '#/definitions/Recipient'
+      recipientAddress:
+        type: object
+        description: The addres of the recipient.
+        $ref: '#/definitions/Geocoded_Address'
+      originAddress:
+        type: object
+        description: The addres of where the order should be picked up from
+        $ref: '#/definitions/Geocoded_Address'
+      packageCount:
+        type: integer
+        format: int32
+        description: The number of separate packagesto be delivered for this order.
+        example: 3
+      signatureRequired:
+        type: boolean
+        description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep. This value can no longer be set for individual orders. It is a merchant wide setting.
+        example: true
+      service:
+        type: string
+        description: >- 
+          The service with which to create the order, which will determine the price and speed of the delivery.
+          The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
+          This can be the `service` from the GET /rates response.
+        example: 'SAMEDAY'
+      notes:
+        type: string
+        description: Any notes related specifically to the destination address.
+        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
+      refNumber:
+        type: string
+        description: A reference number from your side that we can use to contact you about the order
+        example: shopifyid1234
+      completeAfter:
+        type: number
+        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        example: 1578439750000
+      completeBefore:
+        type: number
+        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        example: 1578439950000
+      merchantDisplayName:
+        type: string
+        description: A display name that's going to be shown in the order's label
+        example: Metro Fleury No 2
+      
+
+  Pickup:
+    title: Pickup object
+    type: object
+    properties:
+      id:
+        type: string
+        description: The pickup's id
+        example: "93e11b39-0af8-40bb-742a-912375a09743"
+      createdAt:
+        type: string
+        description: Datetime of the pickup's creation in ISO time
+        example: "2019-10-25T22:56:06.000Z"
+      createdBy:
+        type: string
+        description: Service account's id
+        example: "93e66b39-0uf8-40bb-742a-911235a09743"
+      merchantId:
+        type: string
+        description: The merchant's id
+        example: "13e11b39-0uf8-40bb-742a-913125a09743"
+      completeAfter:
+        type: number
+        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        example: 1578439750000
+      completeBefore:
+        type: number
+        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        example: 1578439950000
+      recipient:
+        type: object
+        description: The recipient of the pickup to be delivered.
+        $ref: '#/definitions/Recipient'
+      recipientAddress:
+        type: object
+        description: The addres of the recipient.
+        $ref: '#/definitions/Geocoded_Address'
+      packageCount:
+        type: integer
+        format: int32
+        description: The number of separate packagesto be delivered for this pickup.
+        example: 3
+      notes:
+        type: string
+        description: Any notes related specifically to the destination address.
+        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
+      orderIds:
+        type: array
+        items:
+          type: string
+        description: A list of orderIds that this pickup is related to.
+        example: ["93e11b39-0af8-40bb-742a-912375a09743","43e11a39-0af8-40bb-742a-962345z07582","93easle9-0af8-43bb-742a-962345z09623"]
+  OrderStatusPatchRequest:
+    title: Order Status Patch Request
+    properties:
+      id: 
+        type: string
+        description: The new status of the order. Through the BoxKnight API, the status can only be set to `PICKUP_READY`
+        example: 'PICKUP_READY'
+  AuthTokenRequest:
+    title: Auth Token Request
+    properties:
+      username: 
+        type: string
+        description: The username for the account the auth token is being request for. 
+        example: 'user-serivce-account-test' 
+      password: 
+        type: string
+        description: The password for the account the auth token is being request for. 
+        example: 'userpassword'
+
+  PatchPickupOrderIdsReq:
+    title: Patch Pickup's orderIds request
+    properties:
+      orderIds: 
+        type: array
+        items:
+          type: string
+        description: The list of orderIds we want to replace the pickup's one to.
+        example: ["2375a0as-0af8-40bb-742a-912375a09743","e11a3339-0af8-40bb-742a-962345ze11a3","ask12le9-0af8-43bb-742a-9623e11a3s23"]
+  
+  ServiceAccountResponse:
+    title: Service Account response
+    properties:
+      username: 
+        type: string
+        description: The username for the newly created service account. 
+        example: 'user-serivce-account-test' 
+      password: 
+        type: string
+        description: The password for for the newly created service account. 
+        example: 'userpassword'
+        
+  AuthTokenResponse:
+    title: Auth Token Response
+    properties:
+      token: 
+        type: string
+        description: The Auth token to be included in the Authorization header of your requests
+        example: 'token'
+
+  ArrayOfWindows:
+    type: array
+    items:
+      type: object
+      properties:
+        weekday: 
+          type: string
+          description: The weekday of this specific window (monday-sunday)
+        deliveryWindow:
+          type: object
+          description: Time window for delivery
+          $ref: '#/definitions/TimeWindow'
+        cutoffTime: 
+          type: string
+          description: The cutoff time of this specific window (HH:mm)
+        date:
+          type: string
+          description: The date of this specific window (YYYY-MM-DD)
+    example:
+      - weekday: "wednesday"
+        deliveryWindow: { timeStart: '10:00', timeEnd: '13:00' }
+        cutoffTime: "08:00"
+        date:  "2019-10-23"
+      - weekday: "wednesday"
+        deliveryWindow: { timeStart: '19:00', timeEnd: '22:00' }
+        cutoffTime: "13:00"
+        date:  "2019-10-23"
+      - weekday: "thursday"
+        deliveryWindow: { timeStart: '10:00', timeEnd: '13:00' }
+        cutoffTime: "08:00"
+        date:  "2019-10-24"
+  ArrayOfRates:
+    type: array
+    items:
+      type: object
+      properties:
+        price: 
+          type: number
+          description: The price for the rate in CAD.
+        service:
+          type: string
+          description: A code representing the service level for the rate. Possible values are `SAMEDAY`, `NEXTDAY` and `SCHEDULED`
+        name:
+          type: string
+          description: The human readable name for the rate.
+        description: 
+          type: string
+          description: A description of the service provided by this rate and the estimated delivery date.
+        estimateDay:
+          type: string
+          description: The estimate date or range of delivery depending on merchant
+        estimateFrom:
+          type: string
+          description: The minimum estimate date of delivery depending on merchant
+        estimateTo:
+          type: string
+          description: The maximum date of delivery depending on merchant
+    example:
+      - price: 10
+        service: "NEXTDAY"
+        name: "BoxKnight Next-Day Delivery"
+        description:  "Get your package the next opening day of the merchant (2019-10-30)"
+        estimateDay: "2019-10-30"
+        estimateFrom: "2019-10-30"
+        estimateTo: "2019-10-30"
+      - price: 12
+        service: "SAMEDAY"
+        name: "BoxKnight Same-Day Delivery"
+        description:  "Get your package before the end of the day (2019-10-29)"  
+        estimateDay: "2019-10-29"
+        estimateFrom: "2019-10-29"
+        estimateTo: "2019-10-29"
+      - price: 12
+        service: "SCHEDULED"
+        name: "Boxknight Scheduled Delivery"
+        description:  "Get your package in a 3h window within the next 2 weeks (2019-10-29 to 2019-11-11)"  
+        estimateDay: "2019-10-29 to 2019-11-11"
+        estimateFrom: "2019-10-29"
+        estimateTo: "2019-11-11"
+        
+  ArrayOfOrders:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The order's id
+          example: "93e11b39-0af8-40bb-742a-912375a09743"
+        createdAt:
+          type: string
+          description: Datetime of the order's creation in ISO time
+          example: "2019-10-25T22:56:06.000Z"
+        createdBy:
+          type: string
+          description: Service account's id
+          example: "93e66b39-0uf8-40bb-742a-911235a09743"
+        merchantId:
+          type: string
+          description: The merchant's id
+          example: "13e11b39-0uf8-40bb-742a-913125a09743"
+        orderStatus: 
+          type: string
+          description: >-
+            The current status of the order, could be 
+            CREATED, GEOCODED, GEOCODEDFAILED, PICKUP_READY, 
+            PICKUP_ASSIGNED, PICKUP_EN_ROUTE, 
+            PICKUP_COMPLETED, DELIVERY_ASSIGNED, 
+            DELIVERY_EN_ROUTE, DELIVERY_COMPLETED
+          example: 'GEOCODED'
+        scanningRequired:
+          type: boolean
+          default: true
+          description: Tell if the order need scanning,
+          example: true
+        validAddress: 
+          type: boolean
+          description: The address validity according to our validator.
+          example: true
+        labelUrl:
+          type: string
+          description: The URL to download the order's ZPL label
+          example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.zpl"
+        pdfLabelUrl:
+          type: string
+          description: The URL to download the order's PDF label
+          example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.pdf"
+        recipient:
+          type: object
+          description: The recipient of the order to be delivered.
+          $ref: '#/definitions/Recipient'
+        recipientAddress:
+          type: object
+          description: The addres of the recipient.
+          $ref: '#/definitions/Geocoded_Address'
+        originAddress:
+          type: object
+          description: The addres of where the order should be picked up from
+          $ref: '#/definitions/Geocoded_Address'
+        packageCount:
+          type: integer
+          format: int32
+          description: The number of separate packagesto be delivered for this order.
+          example: 3
+        signatureRequired:
+          type: boolean
+          description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep.
+          example: true
+        service:
+          type: string
+          description: >- 
+            The service with which to create the order, which will determine the price and speed of the delivery.
+            The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
+            This can be the `service` from the GET /rates response.
+          example: 'SAMEDAY'
+        notes:
+          type: string
+          description: Any notes related specifically to the destination address.
+          example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
+            
+      
+    example:
+      {
+      "orders": [
+          {
+              "tasks": [
+                  {
+                      "shortId": "be8ba54c",
+                      "taskType": "DELIVERY",
+                      "id": "zkxji7GipDVxncbbo5Zc3uTS",
+                      "taskStatus": "UNASSIGNED"
+                  }
+              ],
+              "id": "4213-85e2-4686-a21c-4ca9889587a6",
+              "createdAt": "2019-11-25T16:17:22.000Z",
+              "merchantId": "05032132d9d-2132d7-4cad-8114-7b69a4124e740d8",
+              "recipient": {
+                  "phone": "+15142140475",
+                  "name": "Testing Testing"
+              },
+              "recipientAddress": {
+                  "number": "1234",
+                  "street": "Avenue Holland",
+                  "postalCode": "H4A 3C9",
+                  "city": "Montréal",
+                  "sublocality": "Communauté-Urbaine-de-Montréal",
+                  "province": "Québec",
+                  "country": "Canada",
+                  "location": {
+                      "lat": 45.6755719,
+                      "lng": -73.21911979999999
+                  }
+              },
+              "createdBy": "13248f165-3757-4be0-96538-ae064833c8b3",
+              "originAddress": {
+                  "number": "3333",
+                  "street": "Boulevard Bourassa",
+                  "postalCode": "H4R 2A4",
+                  "city": "Montréal",
+                  "sublocality": "Communauté-Urbaine-de-Montréal",
+                  "province": "Québec",
+                  "country": "Canada",
+                  "location": {
+                      "lat": 45.4934762,
+                      "lng": -73.72103080000001
+                  }
+              },
+              "orderStatus": "GEOCODED",
+              "signatureRequired": true,
+              "scanningRequired": true,
+              "validAddress": true,
+              "notes": "Please knock, the buzzer is broken",
+              "labelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/BoxKnight-ShippingLabel-123.zpl",
+              "pdfLabelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/BoxKnight-ShippingLabel-123.pdf",
+              "packageCount": 2
+          },
+          {
+              "tasks": [
+                  {
+                      "taskType": "DELIVERY",
+                      "taskStatus": "UNASSIGNED",
+                      "id": "1234567890-5"
+                  }
+              ],
+              "id": "1fe54116-bc32-4708-adbe-015c781238f2",
+              "createdAt": "2019-11-22T23:48:27.000Z",
+              "merchantId": "1242d9d-4ed7-4cad-8114-7b69afe740d8",
+              "recipient": {
+                  "phone": "+15142140475",
+                  "name": "Private Testing"
+              },
+              "recipientAddress": {
+                  "number": "1234",
+                  "street": "Avenue Holland",
+                  "postalCode": "H4A 3C9",
+                  "city": "Montréal",
+                  "sublocality": "Communauté-Urbaine-de-Montréal",
+                  "province": "Québec",
+                  "country": "Canada",
+                  "location": {
+                      "lat": 45.6755719,
+                      "lng": -73.21911979999999
+                  }
+              },
+              "createdBy": "21348f165-3757-4be0-96538-ae1234833c8b3",
+              "originAddress": {
+                  "number": "3333",
+                  "street": "Boulevard Bourassa",
+                  "postalCode": "H4R 2A4",
+                  "city": "Montréal",
+                  "sublocality": "Communauté-Urbaine-de-Montréal",
+                  "province": "Québec",
+                  "country": "Canada",
+                  "location": {
+                      "lat": 45.4934762,
+                      "lng": -73.72103080000001
+                  }
+              },
+              "orderStatus": "GEOCODED",
+              "signatureRequired": true,
+              "scanningRequired": true,
+              "validAddress": true,
+              "notes": "Please knock, the buzzer is broken",
+              "packageCount": 2
+          }
+      ],
+      "next": {
+          "limit": "2",
+          "startAt": "1fe54116-bc32-4708-adbe-015c784358f2",
+          "createdAt": "2019-12-02T20:45:12.000Z"
+      }
+  }
