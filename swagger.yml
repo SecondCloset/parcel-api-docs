@@ -2,7 +2,9 @@ swagger: '2.0'
 info:
   version: 'v1'
   title: "GoBolt Parcel"
-  description: Welcome to the GoBolt Parcel API Documentation. You can use the GoBolt API to requests rates, create an order, delete an order, retrieve a shipping label.
+  description: >-
+    Welcome to the GoBolt Parcel API Documentation. You can use the GoBolt API to requests rates, create an order, delete an order, retrieve a shipping label.
+    Please note that for API requests to our staging environment, please replace https://api-parcel.gobolt.com with https://api-parcel-stage.gobolt.com
   x-logo:
     url: "https://gobolt.com/wp-content/themes/sc-business-marketing-website/bolt-assets/GoBolt-Primary-for-White-Bg.png"
     background: "#ffffff"
@@ -14,7 +16,7 @@ tags:
 - name: "Rates"
   description: "Everything about shipping rates"
 - name: "Orders"
-  description: "Everything about orders. To have a direct link to our tracking using an `orderId`, you can use `https://www.boxknight.com/tracking?trackingNo={orderId}`"  
+  description: "Everything about orders. To have a direct link to our tracking using an `orderId`, you can use `https://www.tracking-parcel.gobolt.com/tracking/{orderId}`"  
 - name: "Pickups"
   description: "Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so."
 schemes:
@@ -30,7 +32,7 @@ securityDefinitions:
     tokenUrl: /auth/token
     scopes: {}
     description: >-
-      The BoxKnight API uses OAuth 2.0 with Client Credentials grant type to secure endpoints.
+      The GoBolt API uses OAuth 2.0 with Client Credentials grant type to secure endpoints.
       Before every request, you must make a POST request to the `/auth/token` endpoint to generate an access `token`.
       You must then include this token as an `Authorization` header in every authenticated request.
   Authorization-Header:
@@ -85,7 +87,7 @@ paths:
       description: >-
         This endpoint retrieves a list of all the shipping rates for a given potential order in accordance to the pricing 
         structure established when creating your merchant organization. If either the origin postal code or
-        destination postal code is not in BoxKnight's serviceable area, the endpoint will return an empty list.
+        destination postal code is not in GoBolt's serviceable area, the endpoint will return an empty list.
       summary: Retrieve Rates
       parameters:
         - name: body
@@ -159,7 +161,7 @@ paths:
       tags:
         - "Orders"
       description: >-
-        This endpoint creates a new order to be delivered by BoxKnight. This operation is treated as a long running task. As soon as your request is validated,
+        This endpoint creates a new order to be delivered by GoBolt. This operation is treated as a long running task. As soon as your request is validated,
         you will receive a `200 OK` response with the order `id` while processing continues in the background. 
       summary: Create a New Order
       security:
@@ -284,7 +286,7 @@ paths:
       tags:
         - "Pickups"
       description: >-
-        This endpoint creates a new pickup to be delivered by BoxKnight. 
+        This endpoint creates a new pickup to be delivered by GoBolt. 
         -- Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so. --
       summary: Create a New Pickup
       security:
@@ -384,7 +386,7 @@ definitions:
       labelUrl:
         type: string
         description: The direct URL of the shipping label.
-        example: https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-123456.pdf
+        example: https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-123456.pdf
   Recipient:
     title: Recipient
     type: object
@@ -405,7 +407,7 @@ definitions:
       email:
         type: string
         description: email of the recipient
-        example: charles.carmichael@boxknight.com
+        example: charles.carmichael@gobolt.com
     required:
       - name
       - phone
@@ -420,7 +422,7 @@ definitions:
       unit:
         type: string
         description: The unit, apartment and/or business name of the address. This property is not parsed during the geolocation of the address and can be descriptive.
-        example: unit204 - BoxKnight HQ
+        example: unit204 - GoBolt HQ
       city:
         type: string
         description: The city or municipality of the address.
@@ -843,11 +845,11 @@ definitions:
       labelUrl:
         type: string
         description: The URL to download the order's ZPL label
-        example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.zpl"
+        example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.zpl"
       pdfLabelUrl:
         type: string
         description: The URL to download the order's PDF label
-        example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.pdf"
+        example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.pdf"
       recipient:
         type: object
         description: The recipient of the order to be delivered.
@@ -954,7 +956,7 @@ definitions:
     properties:
       id: 
         type: string
-        description: The new status of the order. Through the BoxKnight API, the status can only be set to `PICKUP_READY`
+        description: The new status of the order. Through the GoBolt API, the status can only be set to `PICKUP_READY`
         example: 'PICKUP_READY'
   AuthTokenRequest:
     title: Auth Token Request
@@ -1058,14 +1060,14 @@ definitions:
     example:
       - price: 10
         service: "NEXTDAY"
-        name: "BoxKnight Next-Day Delivery"
+        name: "GoBolt Next-Day Delivery"
         description:  "Get your package the next opening day of the merchant (2019-10-30)"
         estimateDay: "2019-10-30"
         estimateFrom: "2019-10-30"
         estimateTo: "2019-10-30"
       - price: 12
         service: "SAMEDAY"
-        name: "BoxKnight Same-Day Delivery"
+        name: "GoBolt Same-Day Delivery"
         description:  "Get your package before the end of the day (2019-10-29)"  
         estimateDay: "2019-10-29"
         estimateFrom: "2019-10-29"
@@ -1120,11 +1122,11 @@ definitions:
         labelUrl:
           type: string
           description: The URL to download the order's ZPL label
-          example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.zpl"
+          example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.zpl"
         pdfLabelUrl:
           type: string
           description: The URL to download the order's PDF label
-          example: "https://label12345.s3.amazonaws.com/BoxKnight-ShippingLabel-1234567.pdf"
+          example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.pdf"
         recipient:
           type: object
           description: The recipient of the order to be delivered.
@@ -1210,8 +1212,8 @@ definitions:
               "scanningRequired": true,
               "validAddress": true,
               "notes": "Please knock, the buzzer is broken",
-              "labelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/BoxKnight-ShippingLabel-123.zpl",
-              "pdfLabelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/BoxKnight-ShippingLabel-123.pdf",
+              "labelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.zpl",
+              "pdfLabelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.pdf",
               "packageCount": 2
           },
           {
