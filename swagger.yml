@@ -106,26 +106,7 @@ paths:
         200:
           description: 'Sucessful Response'
           schema: 
-            $ref: '#/definitions/AuthTokenResponse'
-  /oauth/token:
-    x-summary: Refresh Access Token
-    post:
-      tags:
-        - "Service Accounts & Tokens"
-      description: >-
-        Exchange the client_id(username) and client_secret(password) of a service account for an access_token.
-      summary: Refresh Access Token
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/AuthTokenRequest'
-      responses:
-        200:
-          description: 'Sucessful Response'
-          schema: 
-            $ref: '#/definitions/AuthTokenResponse'   
+            $ref: '#/definitions/AuthTokenResponse' 
   /rates:
     x-summary: Rates
     post:
@@ -1010,12 +991,21 @@ definitions:
     properties:
       client_id: 
         type: string
-        description: The client_id (username) for the account the access token is being request for. 
+        description: The client_id (username) for the account the access token is being request for. This value is required if you are requesting an access token.
         example: 'user-service-account-test' 
       client_secret: 
         type: string
-        description: The client_secret (password) for the account the auth token is being request for. 
+        description: The client_secret (password) for the account the auth token is being request for. This value is required only if you are requesting an access token.
+        example: 'user-service-account-test' 
         example: 'userpassword'
+      grant_type:
+        type: string
+        description: The Oauth 2.0 grant type that is being requested. Value must be `client_credentials`. This value is always required.
+        example: 'client_credentials'
+      refresh_token:
+        type: string
+        description: The refresh token previously issued to the client. This value is required only if you are refreshing an access token.
+        example: 'DAV-aS9rquszIiQZqpZ8GCfMl'
 
   PatchPickupOrderIdsReq:
     title: Patch Pickup's orderIds request
