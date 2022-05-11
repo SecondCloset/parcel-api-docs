@@ -72,8 +72,24 @@ securityDefinitions:
        with the token to make authenticated requests to secure endpoints.
 
 paths:
+  /users/service:
+    x-summary: Service account
+    post:
+      tags:
+        - "Service Accounts & Tokens"
+      description: >-
+        Use your admin token to create a service account in order to use our api
+      summary: Create Service Account
+      security:
+        - Oauth2: []
+        - Authorization-Header: []
+      responses:
+        200:
+          description: 'Sucessful Response'
+          schema: 
+            $ref: '#/definitions/ServiceAccountResponse'
   /oauth/token:
-    x-summary: Authentication Token
+    x-summary: Request Access Token
     post:
       tags:
         - "Service Accounts & Tokens"
@@ -91,22 +107,25 @@ paths:
           description: 'Sucessful Response'
           schema: 
             $ref: '#/definitions/AuthTokenResponse'
-  /users/service:
-    x-summary: Service account
+  /oauth/token:
+    x-summary: Refresh Access Token
     post:
       tags:
         - "Service Accounts & Tokens"
       description: >-
-        Use your admin token to create a service account in order to use our api
-      summary: Create Service account
-      security:
-        - Oauth2: []
-        - Authorization-Header: []
+        Exchange the client_id(username) and client_secret(password) of a service account for an access_token.
+      summary: Refresh Access Token
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AuthTokenRequest'
       responses:
         200:
           description: 'Sucessful Response'
           schema: 
-            $ref: '#/definitions/ServiceAccountResponse'
+            $ref: '#/definitions/AuthTokenResponse'   
   /rates:
     x-summary: Rates
     post:
