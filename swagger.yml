@@ -8,6 +8,11 @@ info:
   x-logo:
     url: "https://gobolt.com/wp-content/themes/sc-business-marketing-website/bolt-assets/GoBolt-Primary-for-White-Bg.png"
     background: "#ffffff"
+x-servers:
+  - url: https://api-parcel-stage.gobolt.com/v1
+    description: Development/Staging environment
+  - url: https://api-parcel.gobolt.com/v1
+    description: Production Environment
 host: api-parcel.gobolt.com
 basePath: /v1
 tags:
