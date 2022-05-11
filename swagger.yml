@@ -996,7 +996,6 @@ definitions:
       client_secret: 
         type: string
         description: The client_secret (password) for the account the auth token is being request for. This value is required only if you are requesting an access token.
-        example: 'user-service-account-test' 
         example: 'userpassword'
       grant_type:
         type: string
