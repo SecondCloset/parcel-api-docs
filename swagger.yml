@@ -51,7 +51,7 @@ tags:
 - name: "Rates"
   description: "Everything about shipping rates"
 - name: "Orders"
-  description: "Everything about orders. To have a direct link to our tracking using an `orderId`, you can use `https://www.tracking-parcel.gobolt.com/tracking/{orderId}`"  
+  description: "Everything about orders.  
 - name: "Pickups"
   description: "Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so."
 schemes:
