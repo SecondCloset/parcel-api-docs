@@ -2,9 +2,10 @@ swagger: '2.0'
 info:
   version: 'v1'
   title: "GoBolt Parcel"
-  description: >-
+  description: |
     Welcome to the GoBolt Parcel API Documentation. You can use the GoBolt API to requests rates, create an order, delete an order, retrieve a shipping label.
-    Please note that for API requests to our staging environment, please replace https://api-parcel.gobolt.com with https://api-parcel-stage.gobolt.com
+    
+    <!-- ReDoc-Inject: <security-definitions> -->
   x-logo:
     url: "https://www.app.boxknight.com/static/media/gobolt_logo.5bddbc4c.png"
     background: "#ffffff"
