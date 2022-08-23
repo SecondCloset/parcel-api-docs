@@ -4,7 +4,6 @@ info:
   title: "GoBolt Parcel"
   description: |
     Welcome to the GoBolt Parcel API Documentation. You can use the GoBolt API to requests rates, create an order, delete an order, retrieve a shipping label.
-    
     ## Authentication
     The GoBolt Parcel APIs use the [OAuth 2.0 protocol](https://www.oauth.com/oauth2-servers/access-tokens/) for authentication and authorization. GoBolt supports the [client credentials](https://www.oauth.com/oauth2-servers/access-tokens/) grant type for Oauth 2.0 
       
@@ -51,7 +50,7 @@ tags:
 - name: "Rates"
   description: "Everything about shipping rates"
 - name: "Orders"
-  description: "Everything about orders.  
+  description: "Everything about orders"
 - name: "Pickups"
   description: "Pickups only need to be requested for certain merchants. Please contact your account manager to verify if you need to do so."
 schemes:
