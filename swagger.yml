@@ -5,7 +5,36 @@ info:
   description: |
     Welcome to the GoBolt Parcel API Documentation. You can use the GoBolt API to requests rates, create an order, delete an order, retrieve a shipping label.
     
-    <!-- ReDoc-Inject: <security-definitions> -->
+    ## Authentication
+    The GoBolt Parcel APIs use the [OAuth 2.0 protocol](https://www.oauth.com/oauth2-servers/access-tokens/) for authentication and authorization. GoBolt supports the [client credentials](https://www.oauth.com/oauth2-servers/access-tokens/) grant type for Oauth 2.0 
+      
+    Before authenticating with the APIs listed in this document, you must have a GoBolt Parcel `user account` created with your email and password.
+      
+    ### Basic Steps
+      
+    All applications follow a basic pattern when accessing a GoBolt Parcel API using OAuth 2.0. At a high level, you will follow four steps:
+      
+    #### 1. Create a. OAuth 2.0 Service User
+      
+    A service user is a special type of GoBolt user intended to represent a non-human user that needs to authenticate and be authorized to access data in GoBolt Parcel APIs.
+    It is crucial that you use a service user account to access GoBolt Parcel APIs in your client applications. This way, your GoBolt Parcel integration will be protected from changes in your user accounts such as password resets or account deactivations.
+      
+    In this step, you will exchange your user account credentials (email & password) for service account credentials. There are two ways of doing so:
+      
+      1. Using the [Create A Service Account](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1users~1service/post) API
+      2. Using the [GoBolt Parcel Portal](https://www.parcel-stage.gobolt.com/serviceUser)
+        
+    #### 2. Use your service user to obtain an access token
+      
+    Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service acounts's client_id (username) and client_secret(password) for a token.
+      
+    #### 3. Send the access token to our APIs
+      
+    Once your application has received an `access-token`, it needs to send the token in every subsequent API request in an [HTTP Authorization request header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
+      
+    #### 4. Refresh the access token, if necessary.
+      
+    Access tokens have limited lifetimes. If your application needs access to a GoBolt Parcel endpoint beyond the lifetime of a single access token, it can obtain a refresh token. A refresh token allows your application to obtain new access tokens.    
   x-logo:
     url: "https://www.app.boxknight.com/static/media/gobolt_logo.5bddbc4c.png"
     background: "#ffffff"
