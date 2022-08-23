@@ -9,9 +9,9 @@ info:
     url: "https://www.app.boxknight.com/static/media/gobolt_logo.5bddbc4c.png"
     background: "#ffffff"
 x-servers:
-  - url: https://api-parcel-stage.gobolt.com/v1
+  - url: https://api-parcel-stage.gobolt.com
     description: Development/Staging environment
-  - url: https://api-parcel.gobolt.com/v1
+  - url: https://api-parcel.gobolt.com
     description: Production Environment
 host: api-parcel.gobolt.com
 basePath: /v1
