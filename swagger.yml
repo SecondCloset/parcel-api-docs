@@ -656,6 +656,9 @@ definitions:
     description: Array of packages which contains the package informations for size and weight.
     items:
       type: object
+      required:
+        - weightOptions
+        - sizeOptions
       properties:
         refNumber:
           type: string
@@ -663,6 +666,9 @@ definitions:
           example: '12345'
         weightOptions:
           type: object
+          required:
+            - weight
+            - unit
           properties:
             weight:
               type: number
@@ -675,6 +681,11 @@ definitions:
               example: kg
         sizeOptions:
           type: object
+          required:
+            - length
+            - width
+            - height
+            - unit
           properties:
             length:
               type: integer
