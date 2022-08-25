@@ -163,33 +163,6 @@ paths:
           description: ''
           schema:
             $ref: '#/definitions/ArrayOfRates'
-  /rates/windows:
-    x-summary: Windows
-    get:
-      tags:
-        - "Windows"
-      description: >-
-        This endpoint retrieves a list of all the next available windows of a scheduled delivery for the merchant. 
-      summary: Retrieve Scheduled Windows
-      parameters:
-        - name: originPostalCode
-          in: query
-          description: Postal code of the destination address
-          required: true
-          type: string
-        - name: postalCode
-          in: query
-          description: Postal code of the destination address
-          required: true
-          type: string
-      security:
-        - Oauth2: []
-        - Authorization-Header: []
-      responses: 
-        200: 
-          description: ''
-          schema:
-            $ref: '#/definitions/ArrayOfWindows'
   /labels/{orderId}:
     x-summary: Labels
     get:
@@ -311,32 +284,6 @@ paths:
         200:
           schema:
             $ref: "#/definitions/Order"
-          description: 'Successfull response'
-
-  /orders/{id}/window:
-    x-summary: Update order delivery window
-    patch:
-      tags:
-        - "Orders"
-      description: >-
-        This endpoint modifies the delivery window of the order.
-      summary: Update order delivery window
-      security:
-        - OAuth2: []
-        - Authorization-Header: []
-      parameters:
-      - name: id
-        in: path
-        description: The id of the order that will be updated
-        required: true
-        type: string
-      - name: body
-        in: body
-        required: true
-        schema:
-          $ref: '#/definitions/WindowPatchingRequest'
-      responses:
-        200:
           description: 'Successfull response'
   /orders/{id}/packages:
     x-summary: Update the packages in an order along with their dimensions and weight.
