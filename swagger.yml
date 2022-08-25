@@ -321,7 +321,7 @@ paths:
       tags:
         - "Orders"
       description: >-
-        This endpoint modify the delivery window of the order.
+        This endpoint modifies the delivery window of the order.
       summary: Update order delivery window
       security:
         - OAuth2: []
@@ -340,8 +340,31 @@ paths:
       responses:
         200:
           description: 'Successfull response'
-
-
+  /orders/{id}/packages:
+    x-summary: Update the packages in an order along with their dimensions and weight.
+    put:
+      tags:
+      - "Orders"
+      description: >-
+        This endpoint modifies the packages in an order.
+      summary: Update the packages in an order.
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+      - name: id
+        in: path
+        description: The id of the order that will be updated
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/ArrayOfPackages'
+      responses:
+        200:
+          description: 'Successfull response'
   /orders/pickups:
     x-summary: Pickups
     post:
