@@ -51,6 +51,8 @@ tags:
   description: "Everything about shipping rates"
 - name: "Orders"
   description: "Everything about orders"
+- name: "Tracking"
+  description: "Tracking information about an order"
 schemes:
 - https
 consumes:
@@ -310,6 +312,28 @@ paths:
       responses:
         200:
           description: 'Successfull response'
+  /tracking/{id}:
+    x-summary: Get the tracking information of an order by order id.
+    get:
+      tags:
+        - "Tracking"
+      description: >-
+        This endpoint returns the tracking information for an order. If the request includes the valid postal code associated with the order being retrieved in the query string parameters, the endpoint will return a detailed tracking response. This may include live tracking inforation if available.
+      summary: Get the tracking information of an order by order id.
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+        - name: id
+          in: path
+          description: The id of the order for which tracking information is being requested.
+          required: true
+          type: string
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/Tracking"
+          description: 'Success tracking response'
           
 definitions:
   Label:
@@ -424,11 +448,11 @@ definitions:
     properties:
       lat:
         type: number
-        description: The lattitude of the address
+        description: The lattitude value of the location
         example: 45.4755722
       lng:
         type: number
-        description: The longitude of the address
+        description: The longitude value of the location
         example: -73.61911979999999
   Rate:
     title: Rate
@@ -749,6 +773,96 @@ definitions:
         type: string
         description: The id of the order that will be created
         example: '11a7838-s74hhd8004-343398583d-33895'
+  Tracking:
+    title: Tracking Response
+    type: object
+    required:
+      - id
+      - packageCount
+      - status
+      - timeline
+    properties:
+      id:
+        type: string
+        description: The order's id. This is also the tracking number.
+        example: 'DXPAWRPDD3HM'
+      packageCount:
+        type: number
+        description: The number of packages in the order.
+        example: 3
+      status:
+        type: string
+        description: The status of the order. Possible values are SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED
+        example: OUT_FOR_DELIVERY
+      completeAfter:
+        type: number
+        description: Epoch millisecond timestamp of the start of the expected delivery window. This value is not based on a real-time ETA, but is calculated based on the merchant SLAs.
+        example: 1662474280264
+      completeBefore:
+        type: number
+        description: Epoch millisecond timestamp of the end of the expected delivery window. This value is not based on a real-time ETA, but is calculated based on the merchant SLAs.
+        example: 1662474280264
+      positionInLine:
+        type: number
+        description: The position of this delivery in the driver's route. This is equivalent to `number of stops remaining`. This value is only populated if the status is `OUT_FOR_DELIVERY`.
+        example: 3
+      location:
+        type: object
+        description: The live GPS location of the driver executing the delivery. This value is only present when the status is `OUT_FOR_DELIVERY` and position in line is `1`.
+        $ref: '#/definitions/Location'
+      timeline:
+        type: array
+        items:
+          type: object
+          properties:
+            timestamp:
+              type: number
+              description: Epoch millisecond timestamp of when the event took place.
+              example: 1660053600000
+            eventName:
+              type: string
+              description: Name of the event
+              example: "SHIPMENT_PROCESSING"
+            eventDescription:
+              type: string
+              description: The description of the event
+              example: "Shipment staged at a GoBolt sorting facility"
+    example:
+      {
+          "id": "59AEXFGS6R28",
+          "packageCount": 1,
+          "status": "OUT_FOR_DELIVERY",
+          "positionInLine": 1,
+          "completeAfter": 1660053600000,
+          "completeBefore": 1660064400000,
+          "location": {
+            "lng": -73.49683816091526,
+            "lat": 45.511423360443466
+          },
+          "eta": 1660053811611,
+          "timeline": [
+            {
+              "eventDescription": "Shipment has been created by the merchant",
+              "timestamp": 1659976111000,
+              "eventName": "SHIPMENT_CREATED"
+            },
+            {
+              "eventDescription": "Shipment staged at a GoBolt sorting facility",
+              "timestamp": 1659976131000,
+              "eventName": "SHIPMENT_PROCESSING"
+            },
+            {
+              "eventDescription": "The shipment is on a vehicle for delivery.",
+              "timestamp": 1660047135000,
+              "eventName": "OUT_FOR_DELIVERY"
+            },
+            {
+              "eventDescription": "The shipment has been delivered.",
+              "timestamp": 1660052210000,
+              "eventName": "SHIPMENT_DELIVERED",
+            }
+          ]
+      }
   Order:
     title: Order object
     type: object
