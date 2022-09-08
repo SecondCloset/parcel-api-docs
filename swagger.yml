@@ -312,6 +312,32 @@ paths:
       responses:
         200:
           description: 'Successfull response'
+  /orders/{id}/pickupready:
+    x-summary: Mark an order as ready for pickup. Also refferred to as confirming an order or fulfilling an order.
+    patch:
+      tags:
+      - "Orders"
+      description: >-
+        This endpoint marks an order as ready for pickup. Also refferred to as confirming an order or fulfilling an order.
+      summary: Mark order as ready for pickup.
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+        - name: id
+          in: path
+          description: The id of the order that will be updated
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: 'Successfull response'
+      
   /tracking/{id}:
     x-summary: Get the tracking information of an order by order id.
     get:
