@@ -338,7 +338,7 @@ paths:
         200:
           description: 'Successfull response'
       
-  /tracking/{id}:
+  /tracking/orders/{id}:
     x-summary: Get the tracking information of an order by order id.
     get:
       tags:
