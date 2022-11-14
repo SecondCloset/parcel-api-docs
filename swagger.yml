@@ -818,7 +818,7 @@ definitions:
         example: 3
       status:
         type: string
-        description: The status of the order. Possible values are SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED
+        description: The status of the order. Possible values are SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, FAILED, CANCELLED, ARCHIVED, DELIVERED
         example: OUT_FOR_DELIVERY
       completeAfter:
         type: number
@@ -852,40 +852,52 @@ definitions:
             eventDescription:
               type: string
               description: The description of the event
-              example: "Shipment staged at a GoBolt sorting facility"
+              example: "customer_refused"
+            verificationPhotosUrls:
+              type: array
+              items:
+                type: string
+              description: A list of URLs to download the proof of delivery images. This value is only present when the event is `DELIVERED`.
+              example: ["https://res.cloudinary.com/second-closet/image/upload/v1668460528/appt_field_opts_verification/verification_image0_sxhxxi.jpg"]
+            signaturePhotosUrls:
+              type: array
+              items:
+                type: string
+              description: A list of URLs to download the delivery customer signature images. This value is only present when the event is `DELIVERED`.
+              example: ["https://res.cloudinary.com/second-closet/image/upload/v1668461849/qju374g7jbcxe2qubzfs.png"]
     example:
       {
           "id": "59AEXFGS6R28",
           "packageCount": 1,
           "status": "OUT_FOR_DELIVERY",
+          "completeAfter": 1668448800000,
+          "completeBefore": 1668481200000,
           "positionInLine": 1,
-          "completeAfter": 1660053600000,
-          "completeBefore": 1660064400000,
           "location": {
             "lng": -73.49683816091526,
             "lat": 45.511423360443466
           },
-          "eta": 1660053811611,
           "timeline": [
             {
-              "eventDescription": "Shipment has been created by the merchant",
-              "timestamp": 1659976111000,
-              "eventName": "SHIPMENT_CREATED"
+              "eventName": "SHIPMENT_CREATED",
+              "timestamp": 1668448733000
             },
             {
-              "eventDescription": "Shipment staged at a GoBolt sorting facility",
-              "timestamp": 1659976131000,
-              "eventName": "SHIPMENT_PROCESSING"
+              "eventName": "SHIPMENT_PROCESSING",
+              "timestamp": 1668461251000
             },
             {
-              "eventDescription": "The shipment is on a vehicle for delivery.",
-              "timestamp": 1660047135000,
-              "eventName": "OUT_FOR_DELIVERY"
+              "eventName": "OUT_FOR_DELIVERY",
+              "timestamp": 1668461252000
             },
             {
-              "eventDescription": "The shipment has been delivered.",
-              "timestamp": 1660052210000,
-              "eventName": "SHIPMENT_DELIVERED",
+			        "eventName": "FAILED",
+			        "timestamp": 1668461456000,
+			        "eventDescription": "customer_refused"
+		        },
+            {
+              "eventName": "OUT_FOR_DELIVERY",
+              "timestamp": 1668462845000
             }
           ]
       }
