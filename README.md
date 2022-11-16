@@ -7,7 +7,7 @@ App for public facing Parcel API Documentation
 Ensure Docker Desktop is installed. Note: the build flag is only required when a container rebuild is necessary.
 
 ```bash
-$ docker compose -f docker-compose.dev.yml up --build
+$ docker compose up --build
 ```
 
 Navigate to http://localhost:8080 for redoc.
