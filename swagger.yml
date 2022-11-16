@@ -891,10 +891,10 @@ definitions:
               "timestamp": 1668461252000
             },
             {
-			        "eventName": "FAILED",
-			        "timestamp": 1668461456000,
-			        "eventDescription": "customer_refused"
-		        },
+	      "eventName": "FAILED",
+	      "timestamp": 1668461456000,
+	      "eventDescription": "customer_refused"
+             },
             {
               "eventName": "OUT_FOR_DELIVERY",
               "timestamp": 1668462845000
