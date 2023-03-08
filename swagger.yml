@@ -879,7 +879,7 @@ definitions:
         example: 3
       status:
         type: string
-        description: The status of the order. Possible values are SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, FAILED, CANCELLED, ARCHIVED, DELIVERED
+        description: The status of the order. Possible values are CREATED, GEOCODED, GEOCODED_FAILED, OUT_OF_FSA, SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED, FAILED, CANCELLED, ARCHIVED
         example: OUT_FOR_DELIVERY
       completeAfter:
         type: number
@@ -986,10 +986,10 @@ definitions:
         type: string
         description: >-
           The current status of the order, could be 
-          CREATED, GEOCODED, PICKUP_READY, 
-          PICKUP_ASSIGNED, PICKUP_EN_ROUTE, 
-          PICKUP_COMPLETED, DELIVERY_ASSIGNED, 
-          DELIVERY_EN_ROUTE, DELIVERY_COMPLETED
+          CREATED, GEOCODED, GEOCODEDFAILED, 
+          OUT_OF_FSA, PICKUP_READY, SHIPMENT_CREATED, 
+          SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
+          FAILED, CANCELLED, ARCHIVED
         example: 'GEOCODED'
       scanningRequired:
         type: boolean
@@ -1282,10 +1282,10 @@ definitions:
           type: string
           description: >-
             The current status of the order, could be 
-            CREATED, GEOCODED, GEOCODEDFAILED, PICKUP_READY, 
-            PICKUP_ASSIGNED, PICKUP_EN_ROUTE, 
-            PICKUP_COMPLETED, DELIVERY_ASSIGNED, 
-            DELIVERY_EN_ROUTE, DELIVERY_COMPLETED
+            CREATED, GEOCODED, GEOCODEDFAILED, 
+            OUT_OF_FSA, PICKUP_READY, SHIPMENT_CREATED, 
+            SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
+            FAILED, CANCELLED, ARCHIVED
           example: 'GEOCODED'
         scanningRequired:
           type: boolean
