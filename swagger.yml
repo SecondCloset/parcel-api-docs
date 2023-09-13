@@ -250,7 +250,7 @@ paths:
       tags:
         - "Orders"
       description: >-
-        This endpoint get the order's informations.
+        This endpoint get the order's information.
       summary: Get Order by Id
       security:
         - OAuth2: []
@@ -265,13 +265,13 @@ paths:
         200:
           schema:
             $ref: "#/definitions/Order"
-          description: 'Successfull response'
+          description: 'Successful response'
     
     delete:
       tags:
         - "Orders"
       description: >-
-        This endpoint delete the order's informations.
+        This endpoint delete the order's information.
       summary: Delete Order by Id
       security:
         - OAuth2: []
@@ -286,7 +286,7 @@ paths:
         200:
           schema:
             $ref: "#/definitions/Order"
-          description: 'Successfull response'
+          description: 'Successful response'
   /orders/{id}/packages:
     x-summary: Update the packages in an order along with their dimensions and weight.
     put:
@@ -311,7 +311,7 @@ paths:
           $ref: '#/definitions/Packages'
       responses:
         200:
-          description: 'Successfull response'
+          description: 'Successful response'
   /orders/{id}/pickupready:
     x-summary: Mark an order as ready for pickup. Also refferred to as confirming an order or fulfilling an order.
     patch:
@@ -336,7 +336,7 @@ paths:
             type: object
       responses:
         200:
-          description: 'Successfull response'
+          description: 'Successful response'
       
   /tracking/orders/{id}:
     x-summary: Get the tracking information of an order by order id.
@@ -552,7 +552,7 @@ definitions:
   Packages:
     title: Packages
     type: object
-    description: Object containing an array of packages which contains the package informations for size and weight.
+    description: Object containing an array of packages which contains the package information for size and weight.
     properties:
       packages:
         type: array
@@ -567,6 +567,10 @@ definitions:
               type: string
               description: The reference number of the package.
               example: '12345'
+            trackingNumber:
+              type: string
+              description: The tracking number of the package.
+              example: 'KC15YTWJ0EBV'
             weightOptions:
               type: object
               required:
@@ -580,7 +584,7 @@ definitions:
                   example: 2.5
                 unit:
                   type: string
-                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
+                  description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
                   example: kg
             sizeOptions:
               type: object
@@ -612,7 +616,7 @@ definitions:
 
   ArrayOfPackages:
     type: array
-    description: Array of packages which contains the package informations for size and weight.
+    description: Array of packages which contains the package information for size and weight.
     items:
       type: object
       required:
@@ -636,7 +640,7 @@ definitions:
               example: 2.5
             unit:
               type: string
-              description: The unit of measurement for the package. Can be either `kg` or `lb`.
+              description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
               example: kg
         sizeOptions:
           type: object
@@ -704,7 +708,7 @@ definitions:
         example: 20
       unit:
         type: string
-        description: The unit of weight for the package. Can be either `lb` or `kg`.
+        description: The unit of weight for the package. Can be either `lb`, `g` or `kg`.
         example: lb
     required:
       - weight
@@ -910,6 +914,10 @@ definitions:
               type: string
               description: Name of the event
               example: "SHIPMENT_PROCESSING"
+            trackingNumber:
+              type: string
+              description: Tracking number of package for the event
+              example: "KC15YTWJ0ENX"
             eventDescription:
               type: string
               description: The description of the event
@@ -1024,6 +1032,62 @@ definitions:
         format: int32
         description: The number of separate packagesto be delivered for this order.
         example: 3
+      packages:
+        type: array
+        description: Array of packages on the order
+        items:
+          type: object
+          properties:
+            refNumber:
+              type: string
+              description: The reference number of the package.
+              example: '12345'
+            trackingNumber:
+              type: string
+              description: The tracking number of the package.
+              example: 'KC15YTWJ0EBV'
+            weightOptions:
+              type: object
+              required:
+                - weight
+                - unit
+              properties:
+                weight:
+                  type: number
+                  format: double
+                  description: The weight of the package.
+                  example: 2.5
+                unit:
+                  type: string
+                  description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
+                  example: kg
+            sizeOptions:
+              type: object
+              required:
+                - length
+                - width
+                - height
+                - unit
+              properties:
+                length:
+                  type: integer
+                  format: int32
+                  description: The length of the package.
+                  example: 20
+                width:
+                  type: integer
+                  format: int32
+                  description: The width of the package.
+                  example: 15
+                height:
+                  type: integer
+                  format: int32
+                  description: The height of the package.
+                  example: 15
+                unit:
+                  type: string
+                  description: The unit of measurement for the package. Can be either `cm` or `inch`.
+                  example: inch
       signatureRequired:
         type: boolean
         description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep. This value can no longer be set for individual orders. It is a merchant wide setting.
@@ -1321,6 +1385,62 @@ definitions:
           format: int32
           description: The number of separate packagesto be delivered for this order.
           example: 3
+        packages:
+          type: array
+          description: Array of packages on the order
+          items:
+            type: object
+            properties:
+              refNumber:
+                type: string
+                description: The reference number of the package.
+                example: '12345'
+              trackingNumber:
+                type: string
+                description: The tracking number of the package.
+                example: 'KC15YTWJ0EBV'
+              weightOptions:
+                type: object
+                required:
+                  - weight
+                  - unit
+                properties:
+                  weight:
+                    type: number
+                    format: double
+                    description: The weight of the package.
+                    example: 2.5
+                  unit:
+                    type: string
+                    description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
+                    example: kg
+              sizeOptions:
+                type: object
+                required:
+                  - length
+                  - width
+                  - height
+                  - unit
+                properties:
+                  length:
+                    type: integer
+                    format: int32
+                    description: The length of the package.
+                    example: 20
+                  width:
+                    type: integer
+                    format: int32
+                    description: The width of the package.
+                    example: 15
+                  height:
+                    type: integer
+                    format: int32
+                    description: The height of the package.
+                    example: 15
+                  unit:
+                    type: string
+                    description: The unit of measurement for the package. Can be either `cm` or `inch`.
+                    example: inch
         signatureRequired:
           type: boolean
           description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep.
