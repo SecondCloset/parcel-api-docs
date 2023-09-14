@@ -288,7 +288,7 @@ paths:
             $ref: "#/definitions/Order"
           description: 'Successful response'
   /orders/{id}/packages:
-    x-summary: Update the packages in an order along with their dimensions and weight.
+    x-summary: Update the packages for fields ref number, tracking number, size or weight. The number of packages cannot be updated.
     put:
       tags:
       - "Orders"
@@ -355,6 +355,12 @@ paths:
           description: The id of the order for which tracking information is being requested.
           required: true
           type: string
+        - name: showPackageTracking
+          in: query
+          description: Flag for returning the package-level tracking info in response
+          required: false
+          default: false
+          type: boolean
       responses:
         200:
           schema:
@@ -584,7 +590,7 @@ definitions:
                   example: 2.5
                 unit:
                   type: string
-                  description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
+                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
                   example: kg
             sizeOptions:
               type: object
@@ -640,7 +646,7 @@ definitions:
               example: 2.5
             unit:
               type: string
-              description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
+              description: The unit of measurement for the package. Can be either `kg` or `lb`.
               example: kg
         sizeOptions:
           type: object
@@ -708,7 +714,7 @@ definitions:
         example: 20
       unit:
         type: string
-        description: The unit of weight for the package. Can be either `lb`, `g` or `kg`.
+        description: The unit of weight for the package. Can be either `lb` or `kg`.
         example: lb
     required:
       - weight
@@ -864,6 +870,63 @@ definitions:
         type: string
         description: The id of the order that will be created
         example: '11a7838-s74hhd8004-343398583d-33895'
+      packages:
+        type: array
+        description: Array of packages on the order
+        items:
+          type: object
+          properties:
+            refNumber:
+              type: string
+              description: The reference number of the package.
+              example: '12345'
+            trackingNumber:
+              type: string
+              description: The tracking number of the package.
+              example: 'KC15YTWJ0EBV'
+            weightOptions:
+              type: object
+              required:
+                - weight
+                - unit
+              properties:
+                weight:
+                  type: number
+                  format: double
+                  description: The weight of the package.
+                  example: 2.5
+                unit:
+                  type: string
+                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
+                  example: kg
+            sizeOptions:
+              type: object
+              required:
+                - length
+                - width
+                - height
+                - unit
+              properties:
+                length:
+                  type: integer
+                  format: int32
+                  description: The length of the package.
+                  example: 20
+                width:
+                  type: integer
+                  format: int32
+                  description: The width of the package.
+                  example: 15
+                height:
+                  type: integer
+                  format: int32
+                  description: The height of the package.
+                  example: 15
+                unit:
+                  type: string
+                  description: The unit of measurement for the package. Can be either `cm` or `inch`.
+                  example: inch
+    
   Tracking:
     title: Tracking Response
     type: object
@@ -916,7 +979,7 @@ definitions:
               example: "SHIPMENT_PROCESSING"
             trackingNumber:
               type: string
-              description: Tracking number of package for the event
+              description: The order ID or an order's package's tracking number associated with the event
               example: "KC15YTWJ0ENX"
             eventDescription:
               type: string
@@ -949,19 +1012,23 @@ definitions:
           "timeline": [
             {
               "eventName": "SHIPMENT_CREATED",
-              "timestamp": 1668448733000
+              "timestamp": 1668448733000,
+              "trackingNumber": "EBWIVCXADDHW"
             },
             {
               "eventName": "SHIPMENT_PROCESSING",
-              "timestamp": 1668461251000
+              "timestamp": 1668461251000,
+              "trackingNumber": "ABWIVCXADDHW"
             },
             {
               "eventName": "OUT_FOR_DELIVERY",
-              "timestamp": 1668461252000
+              "timestamp": 1668461252000,
+              "trackingNumber": "KKWIVCXADDHW"
             },
             {
 	      "eventName": "FAILED",
 	      "timestamp": 1668461456000,
+        "trackingNumber": "OKWIVCXADDHW",
 	      "eventDescription": "customer_refused"
              },
             {
@@ -1059,7 +1126,7 @@ definitions:
                   example: 2.5
                 unit:
                   type: string
-                  description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
+                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
                   example: kg
             sizeOptions:
               type: object
@@ -1412,7 +1479,7 @@ definitions:
                     example: 2.5
                   unit:
                     type: string
-                    description: The unit of measurement for the package. Can be either `kg`, `g` or `lb`.
+                    description: The unit of measurement for the package. Can be either `kg` or `lb`.
                     example: kg
               sizeOptions:
                 type: object
