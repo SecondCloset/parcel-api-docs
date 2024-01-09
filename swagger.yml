@@ -1,6 +1,6 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
-  version: 'v1'
+  version: "v1"
   title: "GoBolt Parcel"
   description: |
     Welcome to the GoBolt Parcel API Documentation. You can use the GoBolt API to requests rates, create an order, delete an order, retrieve a shipping label.
@@ -33,7 +33,7 @@ info:
       
     #### 4. Refresh the access token, if necessary.
       
-    Access tokens have limited lifetimes. If your application needs access to a GoBolt Parcel endpoint beyond the lifetime of a single access token, it can obtain a refresh token. A refresh token allows your application to obtain new access tokens.    
+    Access tokens have limited lifetimes. If your application needs access to a GoBolt Parcel endpoint beyond the lifetime of a single access token, it can obtain a refresh token. A refresh token allows your application to obtain new access tokens.
   x-logo:
     url: "https://www.app.boxknight.com/static/media/gobolt_logo.5bddbc4c.png"
     background: "#ffffff"
@@ -45,20 +45,20 @@ x-servers:
 host: api-parcel.gobolt.com
 basePath: /v1
 tags:
-- name: "Service Accounts & Tokens"
-  description: "Everything about authentication for making API requests"
-- name: "Rates"
-  description: "Everything about shipping rates"
-- name: "Orders"
-  description: "Everything about orders"
-- name: "Tracking"
-  description: "Tracking information about an order"
+  - name: "Service Accounts & Tokens"
+    description: "Everything about authentication for making API requests"
+  - name: "Rates"
+    description: "Everything about shipping rates"
+  - name: "Orders"
+    description: "Everything about orders"
+  - name: "Tracking"
+    description: "Tracking information about an order"
 schemes:
-- https
+  - https
 consumes:
-- application/json
+  - application/json
 produces:
-- application/json
+  - application/json
 securityDefinitions:
   OAuth2:
     type: oauth2
@@ -67,43 +67,42 @@ securityDefinitions:
     scopes: {}
     description: |
       The GoBolt Parcel APIs use the [OAuth 2.0 protocol](https://www.oauth.com/oauth2-servers/access-tokens/) for authentication and authorization. GoBolt supports the [client credentials](https://www.oauth.com/oauth2-servers/access-tokens/) grant type for Oauth 2.0 
-      
+
       Before authenticating with the APIs listed in this document, you must have a GoBolt Parcel `user account` created with your email and password.
-      
+
       ### Basic Steps
-      
+
       All applications follow a basic pattern when accessing a GoBolt Parcel API using OAuth 2.0. At a high level, you will follow four steps:
-      
+
       #### 1. Create a. OAuth 2.0 Service User
-      
+
       A service user is a special type of GoBolt user intended to represent a non-human user that needs to authenticate and be authorized to access data in GoBolt Parcel APIs.
       It is crucial that you use a service user account to access GoBolt Parcel APIs in your client applications. This way, your GoBolt Parcel integration will be protected from changes in your user accounts such as password resets or account deactivations.
-      
+
       In this step, you will exchange your user account credentials (email & password) for service account credentials. There are two ways of doing so:
-      
+
         1. Using the [Create A Service Account](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1users~1service/post) API
         2. Using the [GoBolt Parcel Portal](https://www.demo.boxknight.com/serviceUser)
         
       #### 2. Use your service user to obtain an access token
-      
+
       Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service acounts's client_id (username) and client_secret(password) for a token.
-      
+
       #### 3. Send the access token to our APIs
-      
+
       Once your application has received an `access-token`, it needs to send the token in every subsequent API request in an [HTTP Authorization request header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
-      
+
       #### 4. Refresh the access token, if necessary.
-      
+
       Access tokens have limited lifetimes. If your application needs access to a GoBolt Parcel endpoint beyond the lifetime of a single access token, it can obtain a refresh token. A refresh token allows your application to obtain new access tokens.
-      
-      
+
   Authorization-Header:
-     type: apiKey
-     in: header
-     name: Authorization 
-     description: >- 
-       Once you've generated a `token` with the first step of the OAuth 2.0 flow, you must include a `Authorization` header
-       with the token to make authenticated requests to secure endpoints.
+    type: apiKey
+    in: header
+    name: Authorization
+    description: >-
+      Once you've generated a `token` with the first step of the OAuth 2.0 flow, you must include a `Authorization` header
+      with the token to make authenticated requests to secure endpoints.
 
 paths:
   /users/service:
@@ -119,9 +118,9 @@ paths:
         - Authorization-Header: []
       responses:
         200:
-          description: 'Sucessful Response'
-          schema: 
-            $ref: '#/definitions/ServiceAccountResponse'
+          description: "Sucessful Response"
+          schema:
+            $ref: "#/definitions/ServiceAccountResponse"
   /oauth/token:
     x-summary: Request Access Token
     post:
@@ -135,12 +134,12 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/AuthTokenRequest'
+            $ref: "#/definitions/AuthTokenRequest"
       responses:
         200:
-          description: 'Sucessful Response'
-          schema: 
-            $ref: '#/definitions/AuthTokenResponse' 
+          description: "Sucessful Response"
+          schema:
+            $ref: "#/definitions/AuthTokenResponse"
   /rates:
     x-summary: Rates
     post:
@@ -156,15 +155,15 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/RateOptions'
+            $ref: "#/definitions/RateOptions"
       security:
         - Oauth2: []
         - Authorization-Header: []
-      responses: 
-        200: 
-          description: ''
+      responses:
+        200:
+          description: ""
           schema:
-            $ref: '#/definitions/ArrayOfRates'
+            $ref: "#/definitions/ArrayOfRates"
   /labels/{orderId}:
     x-summary: Labels
     get:
@@ -174,22 +173,22 @@ paths:
         This endpoint retrieves a label (zpl, pdf or pdf_letter) from an orderId. The pdf_letter format fits a full standard letter page with a dotted line to cut the label.
       summary: Retrieve Labels
       parameters:
-      - name: orderId
-        in: path
-        description: The id of the order that we want to get the label from
-        required: true
-        type: string
-      - name: format
-        in: query
-        description: format of the label (zpl, pdf or pdf_letter)
-        required: true
-        type: string
+        - name: orderId
+          in: path
+          description: The id of the order that we want to get the label from
+          required: true
+          type: string
+        - name: format
+          in: query
+          description: format of the label (zpl, pdf or pdf_letter)
+          required: true
+          type: string
       security:
         - Oauth2: []
         - Authorization-Header: []
-      responses: 
-        200: 
-          description: 'the label in zpl or pdf file'
+      responses:
+        200:
+          description: "the label in zpl or pdf file"
   /orders:
     x-summary: Orders
     post:
@@ -197,7 +196,7 @@ paths:
         - "Orders"
       description: >-
         This endpoint creates a new order to be delivered by GoBolt. This operation is treated as a long running task. As soon as your request is validated,
-        you will receive a `200 OK` response with the order `id` while processing continues in the background. 
+        you will receive a `200 OK` response with the order `id` while processing continues in the background.
       summary: Create a New Order
       security:
         - OAuth2: []
@@ -207,12 +206,12 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/OrderCreateRequest'
+            $ref: "#/definitions/OrderCreateRequest"
       responses:
         200:
-          description: ''
+          description: ""
           schema:
-            $ref: '#/definitions/OrderCreateSuccessResponse'
+            $ref: "#/definitions/OrderCreateSuccessResponse"
     get:
       tags:
         - "Orders"
@@ -223,27 +222,27 @@ paths:
         - OAuth2: []
         - Authorization-Header: []
       parameters:
-      - name: limit
-        in: query
-        description: limit of results
-        required: false
-        type: number
-      - name: startAt
-        in: query
-        description: last order id, don't put it when first requested it 
-        required: false
-        type: string
-      - name: createdAt
-        in: query
-        description: last order createdAt, don't put it when first requested it 
-        required: false
-        type: string
+        - name: limit
+          in: query
+          description: limit of results
+          required: false
+          type: number
+        - name: startAt
+          in: query
+          description: last order id, don't put it when first requested it
+          required: false
+          type: string
+        - name: createdAt
+          in: query
+          description: last order createdAt, don't put it when first requested it
+          required: false
+          type: string
       responses:
         200:
-          description: ''
+          description: ""
           schema:
-            $ref: '#/definitions/ArrayOfOrders'
-  
+            $ref: "#/definitions/ArrayOfOrders"
+
   /orders/{id}:
     x-summary: Get and Delete Order
     get:
@@ -256,17 +255,17 @@ paths:
         - OAuth2: []
         - Authorization-Header: []
       parameters:
-      - name: id
-        in: path
-        description: The id of the order that will be created
-        required: true
-        type: string
+        - name: id
+          in: path
+          description: The id of the order that will be created
+          required: true
+          type: string
       responses:
         200:
           schema:
             $ref: "#/definitions/Order"
-          description: 'Successful response'
-    
+          description: "Successful response"
+
     delete:
       tags:
         - "Orders"
@@ -277,21 +276,21 @@ paths:
         - OAuth2: []
         - Authorization-Header: []
       parameters:
-      - name: id
-        in: path
-        description: The id of the order that will be deleted
-        required: true
-        type: string
+        - name: id
+          in: path
+          description: The id of the order that will be deleted
+          required: true
+          type: string
       responses:
         200:
           schema:
             $ref: "#/definitions/Order"
-          description: 'Successful response'
+          description: "Successful response"
   /orders/{id}/packages:
     x-summary: Update the packages for fields ref number, tracking number, size or weight. The number of packages cannot be updated.
     put:
       tags:
-      - "Orders"
+        - "Orders"
       description: >-
         This endpoint modifies the packages in an order.
       summary: Update the packages in an order.
@@ -299,24 +298,24 @@ paths:
         - OAuth2: []
         - Authorization-Header: []
       parameters:
-      - name: id
-        in: path
-        description: The id of the order that will be updated
-        required: true
-        type: string
-      - name: body
-        in: body
-        required: true
-        schema:
-          $ref: '#/definitions/Packages'
+        - name: id
+          in: path
+          description: The id of the order that will be updated
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Packages"
       responses:
         200:
-          description: 'Successful response'
+          description: "Successful response"
   /orders/{id}/pickupready:
     x-summary: Mark an order as ready for pickup. Also refferred to as confirming an order or fulfilling an order.
     patch:
       tags:
-      - "Orders"
+        - "Orders"
       description: >-
         This endpoint marks an order as ready for pickup. Also refferred to as confirming an order or fulfilling an order.
       summary: Mark order as ready for pickup.
@@ -336,8 +335,8 @@ paths:
             type: object
       responses:
         200:
-          description: 'Successful response'
-      
+          description: "Successful response"
+
   /tracking/orders/{id}:
     x-summary: Get the tracking information of an order by order id.
     get:
@@ -365,8 +364,8 @@ paths:
         200:
           schema:
             $ref: "#/definitions/Tracking"
-          description: 'Success tracking response'
-          
+          description: "Success tracking response"
+
 definitions:
   Label:
     title: Label
@@ -384,11 +383,11 @@ definitions:
         type: string
         description: The full name of the recipient.
         example: Charles Carmichael
-      phone: 
+      phone:
         type: string
         description: The phone number of the recipient in the following format +1<area code><10 digit phone number>
         pattern: '^[+]1\d{10}$'
-        example: '+15145573849'
+        example: "+15145573849"
       notes:
         type: string
         description: Notes relating spoecifically to the recipient
@@ -442,13 +441,13 @@ definitions:
     title: Address
     type: object
     properties:
-      number: 
+      number:
         type: string
-        description: The street number of the address. 
+        description: The street number of the address.
         example: 1234
       street:
         type: string
-        description: The street name of the address. 
+        description: The street name of the address.
         example: Boul. Poirier
       city:
         type: string
@@ -473,7 +472,7 @@ definitions:
       location:
         type: object
         description: The GPS location of that address
-        $ref: '#/definitions/Location'
+        $ref: "#/definitions/Location"
   Location:
     title: Location
     type: object
@@ -490,7 +489,7 @@ definitions:
     title: Rate
     type: object
     properties:
-      price: 
+      price:
         type: number
         format: double
         description: The price for the rate in CAD.
@@ -503,14 +502,14 @@ definitions:
         type: string
         description: The human readable name for the rate.
         example: "Boxknight Same-Day Delivery"
-      description: 
-       type: string
-       description: A description of the service provided by this rate and the estimated delivery date.
-       example: "Get your package before the end of the day (2019-10-29)"
+      description:
+        type: string
+        description: A description of the service provided by this rate and the estimated delivery date.
+        example: "Get your package before the end of the day (2019-10-29)"
       estimateDay:
-       type: string
-       description: The estimate date of delivery depending on merchant
-       example: "2019-10-29"
+        type: string
+        description: The estimate date of delivery depending on merchant
+        example: "2019-10-29"
 
   TimeWindow:
     title: TimeWindow
@@ -519,11 +518,11 @@ definitions:
       timeStart:
         description: Start time of a specific window (HH:mm)
         type: string
-        example: '10:00'
+        example: "10:00"
       timeEnd:
         description: End time of a specific window (HH:mm)
         type: string
-        example: '22:00'
+        example: "22:00"
 
   SizeOptions:
     title: SizeOptions
@@ -572,11 +571,11 @@ definitions:
             refNumber:
               type: string
               description: The reference number of the package.
-              example: '12345'
+              example: "12345"
             trackingNumber:
               type: string
               description: The tracking number of the package.
-              example: 'KC15YTWJ0EBV'
+              example: "KC15YTWJ0EBV"
             weightOptions:
               type: object
               required:
@@ -632,7 +631,7 @@ definitions:
         refNumber:
           type: string
           description: The reference number of the package.
-          example: '12345'
+          example: "12345"
         weightOptions:
           type: object
           required:
@@ -719,7 +718,7 @@ definitions:
     required:
       - weight
       - unit
-  
+
   ArrayOfWeightOptions:
     type: array
     description: The weight options for the order. Will return empty array if one of the package overweight. Maximum weight is 44 lbs (20 kg).
@@ -745,14 +744,14 @@ definitions:
       postalCode:
         description: The postal code of the recipient of the order
         type: string
-        example: 'H4X1Z5'
+        example: "H4X1Z5"
       originPostalCode:
         description: The origin postal code for the order. If this parameter is omitted, it will default to the pickup location set up in your merchant organization.
         type: string
-        example: 'H4R2A4'  
+        example: "H4R2A4"
       packages:
         type: array
-        $ref: '#/definitions/ArrayOfPackages' 
+        $ref: "#/definitions/ArrayOfPackages"
 
   OrderCreateRequest:
     title: Order Request
@@ -767,15 +766,15 @@ definitions:
       recipient:
         type: object
         description: The recipient of the order to be delivered.
-        $ref: '#/definitions/Recipient'
+        $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
         description: The addres of the recipient.
-        $ref: '#/definitions/Address'
+        $ref: "#/definitions/Address"
       originAddress:
         type: object
         description: The addres of where the order should be picked up from
-        $ref: '#/definitions/Address'
+        $ref: "#/definitions/Address"
       packageCount:
         type: integer
         format: int32
@@ -784,11 +783,11 @@ definitions:
       service:
         type: string
         default: "NEXTDAY"
-        description: >- 
+        description: >-
           The service with which to create the order, which will determine the price and speed of the delivery.
           The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
           This can be the `service` from the GET /rates response.
-        example: 'SAMEDAY'
+        example: "SAMEDAY"
       notes:
         type: string
         description: Any notes related specifically to the destination address.
@@ -807,7 +806,7 @@ definitions:
         example: false
       packages:
         type: array
-        $ref: '#/definitions/ArrayOfPackages'
+        $ref: "#/definitions/ArrayOfPackages"
   WindowPatchingRequest:
     title: Order window update
     type: object
@@ -820,8 +819,7 @@ definitions:
         type: number
         description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
         example: 1578439950000
-        
-          
+
   PickupCreateRequest:
     title: Pickup Request
     type: object
@@ -833,11 +831,11 @@ definitions:
       recipient:
         type: object
         description: The recipient of the order to be delivered.
-        $ref: '#/definitions/Recipient'
+        $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
         description: The addres of the recipient.
-        $ref: '#/definitions/Address'
+        $ref: "#/definitions/Address"
       completeAfter:
         type: number
         description: epoch(milli) of the beginning of pickup window (need to be later than right now)
@@ -860,8 +858,13 @@ definitions:
         items:
           type: string
         description: A list of orderIds that this pickup is related to.
-        example: ["93e11b39-0af8-40bb-742a-912375a09743","43e11a39-0af8-40bb-742a-962345z07582","93easle9-0af8-43bb-742a-962345z09623"]
-        
+        example:
+          [
+            "93e11b39-0af8-40bb-742a-912375a09743",
+            "43e11a39-0af8-40bb-742a-962345z07582",
+            "93easle9-0af8-43bb-742a-962345z09623",
+          ]
+
   OrderCreateSuccessResponse:
     title: Order Create Success Response
     type: object
@@ -869,7 +872,7 @@ definitions:
       id:
         type: string
         description: The id of the order that will be created
-        example: '11a7838-s74hhd8004-343398583d-33895'
+        example: "11a7838-s74hhd8004-343398583d-33895"
       packages:
         type: array
         description: Array of packages on the order
@@ -879,11 +882,11 @@ definitions:
             refNumber:
               type: string
               description: The reference number of the package.
-              example: '12345'
+              example: "12345"
             trackingNumber:
               type: string
               description: The tracking number of the package.
-              example: 'KC15YTWJ0EBV'
+              example: "KC15YTWJ0EBV"
             weightOptions:
               type: object
               required:
@@ -926,7 +929,7 @@ definitions:
                   type: string
                   description: The unit of measurement for the package. Can be either `cm` or `inch`.
                   example: inch
-    
+
   Tracking:
     title: Tracking Response
     type: object
@@ -939,7 +942,7 @@ definitions:
       id:
         type: string
         description: The order's id. This is also the tracking number.
-        example: 'DXPAWRPDD3HM'
+        example: "DXPAWRPDD3HM"
       packageCount:
         type: number
         description: The number of packages in the order.
@@ -963,7 +966,7 @@ definitions:
       location:
         type: object
         description: The live GPS location of the driver executing the delivery. This value is only present when the status is `OUT_FOR_DELIVERY` and position in line is `1`.
-        $ref: '#/definitions/Location'
+        $ref: "#/definitions/Location"
       timeline:
         type: array
         items:
@@ -990,52 +993,53 @@ definitions:
               items:
                 type: string
               description: A list of URLs to download the proof of delivery images. This value is only present when the event is `DELIVERED`.
-              example: ["https://res.cloudinary.com/second-closet/image/upload/v1668460528/appt_field_opts_verification/verification_image0_sxhxxi.jpg"]
+              example:
+                [
+                  "https://res.cloudinary.com/second-closet/image/upload/v1668460528/appt_field_opts_verification/verification_image0_sxhxxi.jpg",
+                ]
             signaturePhotosUrls:
               type: array
               items:
                 type: string
               description: A list of URLs to download the delivery customer signature images. This value is only present when the event is `DELIVERED`.
-              example: ["https://res.cloudinary.com/second-closet/image/upload/v1668461849/qju374g7jbcxe2qubzfs.png"]
+              example:
+                [
+                  "https://res.cloudinary.com/second-closet/image/upload/v1668461849/qju374g7jbcxe2qubzfs.png",
+                ]
     example:
       {
-          "id": "59AEXFGS6R28",
-          "packageCount": 1,
-          "status": "OUT_FOR_DELIVERY",
-          "completeAfter": 1668448800000,
-          "completeBefore": 1668481200000,
-          "positionInLine": 1,
-          "location": {
-            "lng": -73.49683816091526,
-            "lat": 45.511423360443466
-          },
-          "timeline": [
+        "id": "59AEXFGS6R28",
+        "packageCount": 1,
+        "status": "OUT_FOR_DELIVERY",
+        "completeAfter": 1668448800000,
+        "completeBefore": 1668481200000,
+        "positionInLine": 1,
+        "location": { "lng": -73.49683816091526, "lat": 45.511423360443466 },
+        "timeline":
+          [
             {
               "eventName": "SHIPMENT_CREATED",
               "timestamp": 1668448733000,
-              "trackingNumber": "EBWIVCXADDHW"
+              "trackingNumber": "EBWIVCXADDHW",
             },
             {
               "eventName": "SHIPMENT_PROCESSING",
               "timestamp": 1668461251000,
-              "trackingNumber": "ABWIVCXADDHW"
+              "trackingNumber": "ABWIVCXADDHW",
             },
             {
               "eventName": "OUT_FOR_DELIVERY",
               "timestamp": 1668461252000,
-              "trackingNumber": "KKWIVCXADDHW"
+              "trackingNumber": "KKWIVCXADDHW",
             },
             {
-	      "eventName": "FAILED",
-	      "timestamp": 1668461456000,
-        "trackingNumber": "OKWIVCXADDHW",
-	      "eventDescription": "customer_refused"
-             },
-            {
-              "eventName": "OUT_FOR_DELIVERY",
-              "timestamp": 1668462845000
-            }
-          ]
+              "eventName": "FAILED",
+              "timestamp": 1668461456000,
+              "trackingNumber": "OKWIVCXADDHW",
+              "eventDescription": "customer_refused",
+            },
+            { "eventName": "OUT_FOR_DELIVERY", "timestamp": 1668462845000 },
+          ],
       }
   Order:
     title: Order object
@@ -1057,7 +1061,7 @@ definitions:
         type: string
         description: The merchant's id
         example: "13e11b39-0uf8-40bb-742a-913125a09743"
-      orderStatus: 
+      orderStatus:
         type: string
         description: >-
           The current status of the order, could be 
@@ -1065,12 +1069,12 @@ definitions:
           OUT_OF_FSA, PICKUP_READY, SHIPMENT_CREATED, 
           SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
           FAILED, CANCELLED, ARCHIVED
-        example: 'GEOCODED'
+        example: "GEOCODED"
       scanningRequired:
         type: boolean
         description: Tell if the order need scanning,
         example: true
-      validAddress: 
+      validAddress:
         type: boolean
         description: The address validity according to our validator.
         example: true
@@ -1085,15 +1089,15 @@ definitions:
       recipient:
         type: object
         description: The recipient of the order to be delivered.
-        $ref: '#/definitions/Recipient'
+        $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
         description: The addres of the recipient.
-        $ref: '#/definitions/Geocoded_Address'
+        $ref: "#/definitions/Geocoded_Address"
       originAddress:
         type: object
         description: The addres of where the order should be picked up from
-        $ref: '#/definitions/Geocoded_Address'
+        $ref: "#/definitions/Geocoded_Address"
       packageCount:
         type: integer
         format: int32
@@ -1108,11 +1112,11 @@ definitions:
             refNumber:
               type: string
               description: The reference number of the package.
-              example: '12345'
+              example: "12345"
             trackingNumber:
               type: string
               description: The tracking number of the package.
-              example: 'KC15YTWJ0EBV'
+              example: "KC15YTWJ0EBV"
             weightOptions:
               type: object
               required:
@@ -1161,11 +1165,11 @@ definitions:
         example: true
       service:
         type: string
-        description: >- 
+        description: >-
           The service with which to create the order, which will determine the price and speed of the delivery.
           The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
           This can be the `service` from the GET /rates response.
-        example: 'SAMEDAY'
+        example: "SAMEDAY"
       notes:
         type: string
         description: Any notes related specifically to the destination address.
@@ -1186,7 +1190,6 @@ definitions:
         type: string
         description: A display name that's going to be shown in the order's label
         example: Metro Fleury No 2
-      
 
   Pickup:
     title: Pickup object
@@ -1219,11 +1222,11 @@ definitions:
       recipient:
         type: object
         description: The recipient of the pickup to be delivered.
-        $ref: '#/definitions/Recipient'
+        $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
         description: The addres of the recipient.
-        $ref: '#/definitions/Geocoded_Address'
+        $ref: "#/definitions/Geocoded_Address"
       packageCount:
         type: integer
         format: int32
@@ -1238,66 +1241,76 @@ definitions:
         items:
           type: string
         description: A list of orderIds that this pickup is related to.
-        example: ["93e11b39-0af8-40bb-742a-912375a09743","43e11a39-0af8-40bb-742a-962345z07582","93easle9-0af8-43bb-742a-962345z09623"]
+        example:
+          [
+            "93e11b39-0af8-40bb-742a-912375a09743",
+            "43e11a39-0af8-40bb-742a-962345z07582",
+            "93easle9-0af8-43bb-742a-962345z09623",
+          ]
   OrderStatusPatchRequest:
     title: Order Status Patch Request
     properties:
-      id: 
+      id:
         type: string
         description: The new status of the order. Through the GoBolt API, the status can only be set to `PICKUP_READY`
-        example: 'PICKUP_READY'
+        example: "PICKUP_READY"
   AuthTokenRequest:
     title: Auth Token Request
     properties:
-      client_id: 
+      client_id:
         type: string
         description: The client_id (username) for the account the access token is being request for. This value is required if you are requesting an access token.
-        example: 'user-service-account-test' 
-      client_secret: 
+        example: "user-service-account-test"
+      client_secret:
         type: string
         description: The client_secret (password) for the account the auth token is being request for. This value is required only if you are requesting an access token.
-        example: 'userpassword'
+        example: "userpassword"
       grant_type:
         type: string
         description: The Oauth 2.0 grant type that is being requested. Value must be `client_credentials`. This value is always required.
-        example: 'client_credentials'
+        example: "client_credentials"
       refresh_token:
         type: string
         description: The refresh token previously issued to the client. This value is required only if you are refreshing an access token.
-        example: 'DAV-aS9rquszIiQZqpZ8GCfMl'
+        example: "DAV-aS9rquszIiQZqpZ8GCfMl"
 
   PatchPickupOrderIdsReq:
     title: Patch Pickup's orderIds request
     properties:
-      orderIds: 
+      orderIds:
         type: array
         items:
           type: string
         description: The list of orderIds we want to replace the pickup's one to.
-        example: ["2375a0as-0af8-40bb-742a-912375a09743","e11a3339-0af8-40bb-742a-962345ze11a3","ask12le9-0af8-43bb-742a-9623e11a3s23"]
-  
+        example:
+          [
+            "2375a0as-0af8-40bb-742a-912375a09743",
+            "e11a3339-0af8-40bb-742a-962345ze11a3",
+            "ask12le9-0af8-43bb-742a-9623e11a3s23",
+          ]
+
   ServiceAccountResponse:
     title: Service Account response
     properties:
-      username: 
+      username:
         type: string
-        description: The username for the newly created service account. 
-        example: 'user-serivce-account-test' 
-      password: 
+        description: The username for the newly created service account.
+        example: "user-serivce-account-test"
+      password:
         type: string
-        description: The password for for the newly created service account. 
-        example: 'userpassword'
-        
+        description: The password for for the newly created service account.
+        example: "userpassword"
+
   AuthTokenResponse:
     title: Auth Token Response
     properties:
-      access_token: 
+      access_token:
         type: string
         description: The access token string to be included in the Authorization header of API requests.
-        example: 'eyJjdHkiOiJKV1QiLCJlbmMiO'
+        example: "eyJjdHkiOiJKV1QiLCJlbmMiO"
       token_type:
         type: string
-        description:  The type of token this is, always `Bearer`
+        description: The type of token this is, always `Bearer`
         example: Bearer
       expires_in:
         type: number
@@ -1306,21 +1319,21 @@ definitions:
       refresh_token:
         type: string
         description: A refresh token which your application can use to obtain another access token.
-        example: 'xzzf-j_37pZmRW2SixZPzCVC8aGo21U5'
+        example: "xzzf-j_37pZmRW2SixZPzCVC8aGo21U5"
 
   ArrayOfWindows:
     type: array
     items:
       type: object
       properties:
-        weekday: 
+        weekday:
           type: string
           description: The weekday of this specific window (monday-sunday)
         deliveryWindow:
           type: object
           description: Time window for delivery
-          $ref: '#/definitions/TimeWindow'
-        cutoffTime: 
+          $ref: "#/definitions/TimeWindow"
+        cutoffTime:
           type: string
           description: The cutoff time of this specific window (HH:mm)
         date:
@@ -1328,23 +1341,23 @@ definitions:
           description: The date of this specific window (YYYY-MM-DD)
     example:
       - weekday: "wednesday"
-        deliveryWindow: { timeStart: '10:00', timeEnd: '13:00' }
+        deliveryWindow: { timeStart: "10:00", timeEnd: "13:00" }
         cutoffTime: "08:00"
-        date:  "2019-10-23"
+        date: "2019-10-23"
       - weekday: "wednesday"
-        deliveryWindow: { timeStart: '19:00', timeEnd: '22:00' }
+        deliveryWindow: { timeStart: "19:00", timeEnd: "22:00" }
         cutoffTime: "13:00"
-        date:  "2019-10-23"
+        date: "2019-10-23"
       - weekday: "thursday"
-        deliveryWindow: { timeStart: '10:00', timeEnd: '13:00' }
+        deliveryWindow: { timeStart: "10:00", timeEnd: "13:00" }
         cutoffTime: "08:00"
-        date:  "2019-10-24"
+        date: "2019-10-24"
   ArrayOfRates:
     type: array
     items:
       type: object
       properties:
-        price: 
+        price:
           type: number
           description: The price for the rate in CAD.
         service:
@@ -1353,7 +1366,7 @@ definitions:
         name:
           type: string
           description: The human readable name for the rate.
-        description: 
+        description:
           type: string
           description: A description of the service provided by this rate and the estimated delivery date.
         estimateDay:
@@ -1369,25 +1382,25 @@ definitions:
       - price: 10
         service: "NEXTDAY"
         name: "GoBolt Next-Day Delivery"
-        description:  "Get your package the next opening day of the merchant (2019-10-30)"
+        description: "Get your package the next opening day of the merchant (2019-10-30)"
         estimateDay: "2019-10-30"
         estimateFrom: "2019-10-30"
         estimateTo: "2019-10-30"
       - price: 12
         service: "SAMEDAY"
         name: "GoBolt Same-Day Delivery"
-        description:  "Get your package before the end of the day (2019-10-29)"  
+        description: "Get your package before the end of the day (2019-10-29)"
         estimateDay: "2019-10-29"
         estimateFrom: "2019-10-29"
         estimateTo: "2019-10-29"
       - price: 12
         service: "SCHEDULED"
         name: "Boxknight Scheduled Delivery"
-        description:  "Get your package in a 3h window within the next 2 weeks (2019-10-29 to 2019-11-11)"  
+        description: "Get your package in a 3h window within the next 2 weeks (2019-10-29 to 2019-11-11)"
         estimateDay: "2019-10-29 to 2019-11-11"
         estimateFrom: "2019-10-29"
         estimateTo: "2019-11-11"
-        
+
   ArrayOfOrders:
     type: array
     items:
@@ -1409,7 +1422,7 @@ definitions:
           type: string
           description: The merchant's id
           example: "13e11b39-0uf8-40bb-742a-913125a09743"
-        orderStatus: 
+        orderStatus:
           type: string
           description: >-
             The current status of the order, could be 
@@ -1417,13 +1430,13 @@ definitions:
             OUT_OF_FSA, PICKUP_READY, SHIPMENT_CREATED, 
             SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
             FAILED, CANCELLED, ARCHIVED
-          example: 'GEOCODED'
+          example: "GEOCODED"
         scanningRequired:
           type: boolean
           default: true
           description: Tell if the order need scanning,
           example: true
-        validAddress: 
+        validAddress:
           type: boolean
           description: The address validity according to our validator.
           example: true
@@ -1438,15 +1451,15 @@ definitions:
         recipient:
           type: object
           description: The recipient of the order to be delivered.
-          $ref: '#/definitions/Recipient'
+          $ref: "#/definitions/Recipient"
         recipientAddress:
           type: object
           description: The addres of the recipient.
-          $ref: '#/definitions/Geocoded_Address'
+          $ref: "#/definitions/Geocoded_Address"
         originAddress:
           type: object
           description: The addres of where the order should be picked up from
-          $ref: '#/definitions/Geocoded_Address'
+          $ref: "#/definitions/Geocoded_Address"
         packageCount:
           type: integer
           format: int32
@@ -1461,11 +1474,11 @@ definitions:
               refNumber:
                 type: string
                 description: The reference number of the package.
-                example: '12345'
+                example: "12345"
               trackingNumber:
                 type: string
                 description: The tracking number of the package.
-                example: 'KC15YTWJ0EBV'
+                example: "KC15YTWJ0EBV"
               weightOptions:
                 type: object
                 required:
@@ -1514,37 +1527,37 @@ definitions:
           example: true
         service:
           type: string
-          description: >- 
+          description: >-
             The service with which to create the order, which will determine the price and speed of the delivery.
             The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
             This can be the `service` from the GET /rates response.
-          example: 'SAMEDAY'
+          example: "SAMEDAY"
         notes:
           type: string
           description: Any notes related specifically to the destination address.
           example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
-            
-      
+
     example:
       {
-      "orders": [
-          {
-              "tasks": [
+        "orders":
+          [
+            {
+              "tasks":
+                [
                   {
-                      "shortId": "be8ba54c",
-                      "taskType": "DELIVERY",
-                      "id": "zkxji7GipDVxncbbo5Zc3uTS",
-                      "taskStatus": "UNASSIGNED"
-                  }
-              ],
+                    "shortId": "be8ba54c",
+                    "taskType": "DELIVERY",
+                    "id": "zkxji7GipDVxncbbo5Zc3uTS",
+                    "taskStatus": "UNASSIGNED",
+                  },
+                ],
               "id": "4213-85e2-4686-a21c-4ca9889587a6",
               "createdAt": "2019-11-25T16:17:22.000Z",
               "merchantId": "05032132d9d-2132d7-4cad-8114-7b69a4124e740d8",
-              "recipient": {
-                  "phone": "+15142140475",
-                  "name": "Testing Testing"
-              },
-              "recipientAddress": {
+              "recipient":
+                { "phone": "+15142140475", "name": "Testing Testing" },
+              "recipientAddress":
+                {
                   "number": "1234",
                   "street": "Avenue Holland",
                   "postalCode": "H4A 3C9",
@@ -1552,13 +1565,11 @@ definitions:
                   "sublocality": "Communauté-Urbaine-de-Montréal",
                   "province": "Québec",
                   "country": "Canada",
-                  "location": {
-                      "lat": 45.6755719,
-                      "lng": -73.21911979999999
-                  }
-              },
+                  "location": { "lat": 45.6755719, "lng": -73.21911979999999 },
+                },
               "createdBy": "13248f165-3757-4be0-96538-ae064833c8b3",
-              "originAddress": {
+              "originAddress":
+                {
                   "number": "3333",
                   "street": "Boulevard Bourassa",
                   "postalCode": "H4R 2A4",
@@ -1566,11 +1577,8 @@ definitions:
                   "sublocality": "Communauté-Urbaine-de-Montréal",
                   "province": "Québec",
                   "country": "Canada",
-                  "location": {
-                      "lat": 45.4934762,
-                      "lng": -73.72103080000001
-                  }
-              },
+                  "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
+                },
               "orderStatus": "GEOCODED",
               "signatureRequired": true,
               "scanningRequired": true,
@@ -1578,24 +1586,24 @@ definitions:
               "notes": "Please knock, the buzzer is broken",
               "labelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.zpl",
               "pdfLabelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.pdf",
-              "packageCount": 2
-          },
-          {
-              "tasks": [
+              "packageCount": 2,
+            },
+            {
+              "tasks":
+                [
                   {
-                      "taskType": "DELIVERY",
-                      "taskStatus": "UNASSIGNED",
-                      "id": "1234567890-5"
-                  }
-              ],
+                    "taskType": "DELIVERY",
+                    "taskStatus": "UNASSIGNED",
+                    "id": "1234567890-5",
+                  },
+                ],
               "id": "1fe54116-bc32-4708-adbe-015c781238f2",
               "createdAt": "2019-11-22T23:48:27.000Z",
               "merchantId": "1242d9d-4ed7-4cad-8114-7b69afe740d8",
-              "recipient": {
-                  "phone": "+15142140475",
-                  "name": "Private Testing"
-              },
-              "recipientAddress": {
+              "recipient":
+                { "phone": "+15142140475", "name": "Private Testing" },
+              "recipientAddress":
+                {
                   "number": "1234",
                   "street": "Avenue Holland",
                   "postalCode": "H4A 3C9",
@@ -1603,13 +1611,11 @@ definitions:
                   "sublocality": "Communauté-Urbaine-de-Montréal",
                   "province": "Québec",
                   "country": "Canada",
-                  "location": {
-                      "lat": 45.6755719,
-                      "lng": -73.21911979999999
-                  }
-              },
+                  "location": { "lat": 45.6755719, "lng": -73.21911979999999 },
+                },
               "createdBy": "21348f165-3757-4be0-96538-ae1234833c8b3",
-              "originAddress": {
+              "originAddress":
+                {
                   "number": "3333",
                   "street": "Boulevard Bourassa",
                   "postalCode": "H4R 2A4",
@@ -1617,22 +1623,20 @@ definitions:
                   "sublocality": "Communauté-Urbaine-de-Montréal",
                   "province": "Québec",
                   "country": "Canada",
-                  "location": {
-                      "lat": 45.4934762,
-                      "lng": -73.72103080000001
-                  }
-              },
+                  "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
+                },
               "orderStatus": "GEOCODED",
               "signatureRequired": true,
               "scanningRequired": true,
               "validAddress": true,
               "notes": "Please knock, the buzzer is broken",
-              "packageCount": 2
-          }
-      ],
-      "next": {
-          "limit": "2",
-          "startAt": "1fe54116-bc32-4708-adbe-015c784358f2",
-          "createdAt": "2019-12-02T20:45:12.000Z"
+              "packageCount": 2,
+            },
+          ],
+        "next":
+          {
+            "limit": "2",
+            "startAt": "1fe54116-bc32-4708-adbe-015c784358f2",
+            "createdAt": "2019-12-02T20:45:12.000Z",
+          },
       }
-  }
