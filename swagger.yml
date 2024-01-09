@@ -421,7 +421,7 @@ definitions:
         example: Quebec
       country:
         type: string
-        description: The country of the address. Can be written in shor form (i.e. CA)
+        description: The country of the address. Can be written in short form (i.e. CA)
         example: Canada
       postalCode:
         type: string
@@ -945,7 +945,7 @@ definitions:
         example: "DXPAWRPDD3HM"
       packageCount:
         type: number
-        description: The number of packages in the order.
+        description: The number of packages in the order, up to a maximum of 20.
         example: 3
       status:
         type: string
@@ -1101,7 +1101,7 @@ definitions:
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packages to be delivered for this order.
+        description: The number of separate packages to be delivered for this order, up to a maximum of 20.
         example: 3
       packages:
         type: array
@@ -1463,7 +1463,7 @@ definitions:
         packageCount:
           type: integer
           format: int32
-          description: The number of separate packages to be delivered for this order.
+          description: The number of separate packages to be delivered for this order, up to a maximum of 20.
           example: 3
         packages:
           type: array
