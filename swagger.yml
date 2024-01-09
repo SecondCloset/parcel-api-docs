@@ -25,7 +25,7 @@ info:
         
     #### 2. Use your service user to obtain an access token
       
-    Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service acounts's client_id (username) and client_secret(password) for a token.
+    Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service account's client_id (username) and client_secret(password) for a token.
       
     #### 3. Send the access token to our APIs
       
@@ -86,7 +86,7 @@ securityDefinitions:
         
       #### 2. Use your service user to obtain an access token
 
-      Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service acounts's client_id (username) and client_secret(password) for a token.
+      Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service account's client_id (username) and client_secret(password) for a token.
 
       #### 3. Send the access token to our APIs
 
@@ -118,7 +118,7 @@ paths:
         - Authorization-Header: []
       responses:
         200:
-          description: "Sucessful Response"
+          description: "Successful Response"
           schema:
             $ref: "#/definitions/ServiceAccountResponse"
   /oauth/token:
@@ -137,7 +137,7 @@ paths:
             $ref: "#/definitions/AuthTokenRequest"
       responses:
         200:
-          description: "Sucessful Response"
+          description: "Successful Response"
           schema:
             $ref: "#/definitions/AuthTokenResponse"
   /rates:
@@ -312,12 +312,12 @@ paths:
         200:
           description: "Successful response"
   /orders/{id}/pickupready:
-    x-summary: Mark an order as ready for pickup. Also refferred to as confirming an order or fulfilling an order.
+    x-summary: Mark an order as ready for pickup. Also referred to as confirming an order or fulfilling an order.
     patch:
       tags:
         - "Orders"
       description: >-
-        This endpoint marks an order as ready for pickup. Also refferred to as confirming an order or fulfilling an order.
+        This endpoint marks an order as ready for pickup. Also referred to as confirming an order or fulfilling an order.
       summary: Mark order as ready for pickup.
       security:
         - OAuth2: []
@@ -343,7 +343,7 @@ paths:
       tags:
         - "Tracking"
       description: >-
-        This endpoint returns the tracking information for an order. If the request includes the valid postal code associated with the order being retrieved in the query string parameters, the endpoint will return a detailed tracking response. This may include live tracking inforation if available.
+        This endpoint returns the tracking information for an order. If the request includes the valid postal code associated with the order being retrieved in the query string parameters, the endpoint will return a detailed tracking response. This may include live tracking information if available.
       summary: Get the tracking information of an order by order id.
       security:
         - OAuth2: []
@@ -390,7 +390,7 @@ definitions:
         example: "+15145573849"
       notes:
         type: string
-        description: Notes relating spoecifically to the recipient
+        description: Notes relating specifically to the recipient
         example: Do not text, call instead.
       email:
         type: string
@@ -405,7 +405,7 @@ definitions:
     properties:
       street:
         type: string
-        description: The steet number and street name of the address. If needed, the street number postfix can be included as well.
+        description: The street number and street name of the address. If needed, the street number postfix can be included as well.
         example: 4455A Boul. Poirier
       unit:
         type: string
@@ -459,7 +459,7 @@ definitions:
         example: Quebec
       country:
         type: string
-        description: The country of the address. Can be written in shor form (i.e. CA)
+        description: The country of the address. Can be written in short form (i.e. CA)
         example: Canada
       postalCode:
         type: string
@@ -479,7 +479,7 @@ definitions:
     properties:
       lat:
         type: number
-        description: The lattitude value of the location
+        description: The latitude value of the location
         example: 45.4755722
       lng:
         type: number
@@ -769,16 +769,16 @@ definitions:
         $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
-        description: The addres of the recipient.
+        description: The address of the recipient.
         $ref: "#/definitions/Address"
       originAddress:
         type: object
-        description: The addres of where the order should be picked up from
+        description: The address of where the order should be picked up from
         $ref: "#/definitions/Address"
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packagesto be delivered for this order.
+        description: The number of separate packages to be delivered for this order.
         example: 3
       service:
         type: string
@@ -813,11 +813,11 @@ definitions:
     properties:
       completeAfter:
         type: number
-        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
         example: 1578439750000
       completeBefore:
         type: number
-        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        description: epoch (milliseconds) of the end of pickup window (need to be later than completeAfter)
         example: 1578439950000
 
   PickupCreateRequest:
@@ -834,20 +834,20 @@ definitions:
         $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
-        description: The addres of the recipient.
+        description: The address of the recipient.
         $ref: "#/definitions/Address"
       completeAfter:
         type: number
-        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
         example: 1578439750000
       completeBefore:
         type: number
-        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        description: epoch (milliseconds) of the end of pickup window (need to be later than completeAfter)
         example: 1578439950000
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packagesto be delivered for this order.
+        description: The number of separate packages to be delivered for this order.
         example: 3
       notes:
         type: string
@@ -1092,16 +1092,16 @@ definitions:
         $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
-        description: The addres of the recipient.
+        description: The address of the recipient.
         $ref: "#/definitions/Geocoded_Address"
       originAddress:
         type: object
-        description: The addres of where the order should be picked up from
+        description: The address of where the order should be picked up from
         $ref: "#/definitions/Geocoded_Address"
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packagesto be delivered for this order.
+        description: The number of separate packages to be delivered for this order.
         example: 3
       packages:
         type: array
@@ -1180,11 +1180,11 @@ definitions:
         example: shopifyid1234
       completeAfter:
         type: number
-        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
         example: 1578439750000
       completeBefore:
         type: number
-        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        description: epoch (milliseconds) of the end of pickup window (need to be later than completeAfter)
         example: 1578439950000
       merchantDisplayName:
         type: string
@@ -1213,11 +1213,11 @@ definitions:
         example: "13e11b39-0uf8-40bb-742a-913125a09743"
       completeAfter:
         type: number
-        description: epoch(milli) of the beginning of pickup window (need to be later than right now)
+        description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
         example: 1578439750000
       completeBefore:
         type: number
-        description: epoch(milli) of the end of pickup window (need to be later than completeAfter)
+        description: epoch (milliseconds) of the end of pickup window (need to be later than completeAfter)
         example: 1578439950000
       recipient:
         type: object
@@ -1225,12 +1225,12 @@ definitions:
         $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
-        description: The addres of the recipient.
+        description: The address of the recipient.
         $ref: "#/definitions/Geocoded_Address"
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packagesto be delivered for this pickup.
+        description: The number of separate packages to be delivered for this pickup.
         example: 3
       notes:
         type: string
@@ -1295,7 +1295,7 @@ definitions:
       username:
         type: string
         description: The username for the newly created service account.
-        example: "user-serivce-account-test"
+        example: "user-service-account-test"
       password:
         type: string
         description: The password for for the newly created service account.
@@ -1454,16 +1454,16 @@ definitions:
           $ref: "#/definitions/Recipient"
         recipientAddress:
           type: object
-          description: The addres of the recipient.
+          description: The address of the recipient.
           $ref: "#/definitions/Geocoded_Address"
         originAddress:
           type: object
-          description: The addres of where the order should be picked up from
+          description: The address of where the order should be picked up from
           $ref: "#/definitions/Geocoded_Address"
         packageCount:
           type: integer
           format: int32
-          description: The number of separate packagesto be delivered for this order.
+          description: The number of separate packages to be delivered for this order.
           example: 3
         packages:
           type: array
