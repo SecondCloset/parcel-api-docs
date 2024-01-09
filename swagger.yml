@@ -761,7 +761,6 @@ definitions:
       - recipientAddress
       - originAddress
       - packageCount
-      - signatureRequired
     properties:
       recipient:
         type: object
@@ -800,10 +799,6 @@ definitions:
         type: string
         description: A display name that's going to be shown in the order's label
         example: Metro Fleury No 2
-      signatureRequired:
-        type: boolean
-        description: (Deactivated for Covid-19) Always set to false. Flag to set signature required for this order
-        example: false
       packages:
         type: array
         $ref: "#/definitions/ArrayOfPackages"
@@ -1159,10 +1154,6 @@ definitions:
                   type: string
                   description: The unit of measurement for the package. Can be either `cm` or `inch`.
                   example: inch
-      signatureRequired:
-        type: boolean
-        description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep. This value can no longer be set for individual orders. It is a merchant wide setting.
-        example: true
       service:
         type: string
         description: >-
@@ -1521,10 +1512,6 @@ definitions:
                     type: string
                     description: The unit of measurement for the package. Can be either `cm` or `inch`.
                     example: inch
-        signatureRequired:
-          type: boolean
-          description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep.
-          example: true
         service:
           type: string
           description: >-
@@ -1580,7 +1567,6 @@ definitions:
                   "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
                 },
               "orderStatus": "GEOCODED",
-              "signatureRequired": true,
               "scanningRequired": true,
               "validAddress": true,
               "notes": "Please knock, the buzzer is broken",
@@ -1626,7 +1612,6 @@ definitions:
                   "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
                 },
               "orderStatus": "GEOCODED",
-              "signatureRequired": true,
               "scanningRequired": true,
               "validAddress": true,
               "notes": "Please knock, the buzzer is broken",
