@@ -809,7 +809,7 @@ definitions:
         example: 3
       status:
         type: string
-        description: The status of the order. Possible values are CREATED, GEOCODED, GEOCODED_FAILED, OUT_OF_FSA, SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED, FAILED, CANCELLED, ARCHIVED
+        description: The status of the order. Possible values are CREATED, GEOCODED, GEOCODED_FAILED, OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED, FAILED, CANCELLED, ARCHIVED
         example: OUT_FOR_DELIVERY
       completeAfter:
         type: number
