@@ -292,7 +292,7 @@ paths:
       tags:
         - "Orders"
       description: >-
-        This endpoint modifies the packages in an order.
+        This endpoint modifies the packages in an order. The length of the new packages object passed in must match the original package count of the order.
       summary: Update the packages in an order.
       security:
         - OAuth2: []
@@ -367,14 +367,6 @@ paths:
           description: "Success tracking response"
 
 definitions:
-  Label:
-    title: Label
-    type: object
-    properties:
-      labelUrl:
-        type: string
-        description: The direct URL of the shipping label.
-        example: https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-123456.pdf
   Recipient:
     title: Recipient
     type: object
@@ -388,17 +380,19 @@ definitions:
         description: The phone number of the recipient in the following format +1<area code><10 digit phone number>
         pattern: '^[+]1\d{10}$'
         example: "+15145573849"
-      notes:
-        type: string
-        description: Notes relating specifically to the recipient
-        example: Do not text, call instead.
       email:
         type: string
         description: email of the recipient
         example: charles.carmichael@gobolt.com
+      notes:
+        type: string
+        description: Notes relating specifically to the recipient
+        example: Do not text, call instead.
     required:
       - name
       - phone
+      - email
+
   Address:
     title: Address
     type: object
@@ -437,8 +431,9 @@ definitions:
       - province
       - country
       - postalCode
+
   Geocoded_Address:
-    title: Address
+    title: Geocoded Address
     type: object
     properties:
       number:
@@ -473,6 +468,7 @@ definitions:
         type: object
         description: The GPS location of that address
         $ref: "#/definitions/Location"
+
   Location:
     title: Location
     type: object
@@ -485,44 +481,6 @@ definitions:
         type: number
         description: The longitude value of the location
         example: -73.61911979999999
-  Rate:
-    title: Rate
-    type: object
-    properties:
-      price:
-        type: number
-        format: double
-        description: The price for the rate in CAD.
-        example: 7.95
-      service:
-        type: string
-        description: A code representing the service level for the rate. Possible values are `SAMEDAY`, `NEXTDAY` and `SCHEDULED`
-        example: "SAMEDAY"
-      name:
-        type: string
-        description: The human readable name for the rate.
-        example: "Boxknight Same-Day Delivery"
-      description:
-        type: string
-        description: A description of the service provided by this rate and the estimated delivery date.
-        example: "Get your package before the end of the day (2019-10-29)"
-      estimateDay:
-        type: string
-        description: The estimate date of delivery depending on merchant
-        example: "2019-10-29"
-
-  TimeWindow:
-    title: TimeWindow
-    type: object
-    properties:
-      timeStart:
-        description: Start time of a specific window (HH:mm)
-        type: string
-        example: "10:00"
-      timeEnd:
-        description: End time of a specific window (HH:mm)
-        type: string
-        example: "22:00"
 
   SizeOptions:
     title: SizeOptions
@@ -675,32 +633,6 @@ definitions:
               description: The unit of measurement for the package. Can be either `cm` or `inch`.
               example: inch
 
-  ArrayOfSizeOptions:
-    type: array
-    description: The size options for the order. Will return empty array if one of the package is oversized. The maximum size is 85 inches (215.9cm) in size calculated by using the formula "length + grith (height*2 + width*2)"".
-    items:
-      type: object
-      properties:
-        length:
-          type: integer
-          format: int32
-          description: The length of the package
-          example: 20
-        width:
-          type: integer
-          format: int32
-          description: The width of the package
-          example: 15
-        height:
-          type: integer
-          format: int32
-          description: The height of the package
-          example: 15
-        unit:
-          type: string
-          description: The unit of measurement for the package. Can be either `cm` or `inch`.
-          example: inch
-
   WeightOptions:
     title: WeightOptions
     type: object
@@ -718,22 +650,6 @@ definitions:
     required:
       - weight
       - unit
-
-  ArrayOfWeightOptions:
-    type: array
-    description: The weight options for the order. Will return empty array if one of the package overweight. Maximum weight is 44 lbs (20 kg).
-    items:
-      type: object
-      properties:
-        weight:
-          type: integer
-          format: int32
-          description: The weight of the package
-          example: 20
-        unit:
-          type: string
-          description: The unit of weight for the package. Can be either `lb` or `kg`.
-          example: lb
 
   RateOptions:
     title: Rate options
@@ -754,13 +670,15 @@ definitions:
         $ref: "#/definitions/ArrayOfPackages"
 
   OrderCreateRequest:
-    title: Order Request
+    title: Create Order Request
     type: object
     required:
       - recipient
       - recipientAddress
       - originAddress
       - packageCount
+      - packages
+      - signatureRequired
     properties:
       recipient:
         type: object
@@ -778,7 +696,7 @@ definitions:
         type: integer
         format: int32
         description: The number of separate packages to be delivered for this order.
-        example: 3
+        example: 1
       service:
         type: string
         default: "NEXTDAY"
@@ -802,72 +720,15 @@ definitions:
       packages:
         type: array
         $ref: "#/definitions/ArrayOfPackages"
-  WindowPatchingRequest:
-    title: Order window update
-    type: object
-    properties:
-      completeAfter:
-        type: number
-        description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
-        example: 1578439750000
-      completeBefore:
-        type: number
-        description: epoch (milliseconds) of the end of pickup window (need to be later than completeAfter)
-        example: 1578439950000
-
-  PickupCreateRequest:
-    title: Pickup Request
-    type: object
-    required:
-      - recipient
-      - recipientAddress
-      - packageCount
-    properties:
-      recipient:
-        type: object
-        description: The recipient of the order to be delivered.
-        $ref: "#/definitions/Recipient"
-      recipientAddress:
-        type: object
-        description: The address of the recipient.
-        $ref: "#/definitions/Address"
-      completeAfter:
-        type: number
-        description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
-        example: 1578439750000
-      completeBefore:
-        type: number
-        description: epoch (milliseconds) of the end of pickup window (need to be later than completeAfter)
-        example: 1578439950000
-      packageCount:
-        type: integer
-        format: int32
-        description: The number of separate packages to be delivered for this order.
-        example: 3
-      notes:
-        type: string
-        description: Any notes related specifically to the destination address.
-        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
-      orderIds:
-        type: array
-        items:
-          type: string
-        description: A list of orderIds that this pickup is related to.
-        example:
-          [
-            "93e11b39-0af8-40bb-742a-912375a09743",
-            "43e11a39-0af8-40bb-742a-962345z07582",
-            "93easle9-0af8-43bb-742a-962345z09623",
-          ]
 
   OrderCreateSuccessResponse:
-    title: Order Create Success Response
+    title: Create Order Success Response
     type: object
     properties:
       id:
         type: string
         description: The id of the order that will be created
-        example: "11a7838-s74hhd8004-343398583d-33895"
+        example: "FF4F198RNMV5"
       packages:
         type: array
         description: Array of packages on the order
@@ -944,7 +805,7 @@ definitions:
         example: 3
       status:
         type: string
-        description: The status of the order. Possible values are CREATED, GEOCODED, GEOCODED_FAILED, OUT_OF_FSA, SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED, FAILED, CANCELLED, ARCHIVED
+        description: The status of the order. Possible values are CREATED, GEOCODED, GEOCODED_FAILED, OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED, FAILED, CANCELLED, ARCHIVED
         example: OUT_FOR_DELIVERY
       completeAfter:
         type: number
@@ -1036,6 +897,7 @@ definitions:
             { "eventName": "OUT_FOR_DELIVERY", "timestamp": 1668462845000 },
           ],
       }
+
   Order:
     title: Order object
     type: object
@@ -1043,7 +905,7 @@ definitions:
       id:
         type: string
         description: The order's id
-        example: "93e11b39-0af8-40bb-742a-912375a09743"
+        example: "FF4F198RNMV5"
       createdAt:
         type: string
         description: Datetime of the order's creation in ISO time
@@ -1061,7 +923,7 @@ definitions:
         description: >-
           The current status of the order, could be 
           CREATED, GEOCODED, GEOCODEDFAILED, 
-          OUT_OF_FSA, PICKUP_READY, SHIPMENT_CREATED, 
+          OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, 
           SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
           FAILED, CANCELLED, ARCHIVED
         example: "GEOCODED"
@@ -1182,69 +1044,6 @@ definitions:
         description: A display name that's going to be shown in the order's label
         example: Metro Fleury No 2
 
-  Pickup:
-    title: Pickup object
-    type: object
-    properties:
-      id:
-        type: string
-        description: The pickup's id
-        example: "93e11b39-0af8-40bb-742a-912375a09743"
-      createdAt:
-        type: string
-        description: Datetime of the pickup's creation in ISO time
-        example: "2019-10-25T22:56:06.000Z"
-      createdBy:
-        type: string
-        description: Service account's id
-        example: "93e66b39-0uf8-40bb-742a-911235a09743"
-      merchantId:
-        type: string
-        description: The merchant's id
-        example: "13e11b39-0uf8-40bb-742a-913125a09743"
-      completeAfter:
-        type: number
-        description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
-        example: 1578439750000
-      completeBefore:
-        type: number
-        description: epoch (milliseconds) of the end of pickup window (need to be later than completeAfter)
-        example: 1578439950000
-      recipient:
-        type: object
-        description: The recipient of the pickup to be delivered.
-        $ref: "#/definitions/Recipient"
-      recipientAddress:
-        type: object
-        description: The address of the recipient.
-        $ref: "#/definitions/Geocoded_Address"
-      packageCount:
-        type: integer
-        format: int32
-        description: The number of separate packages to be delivered for this pickup.
-        example: 3
-      notes:
-        type: string
-        description: Any notes related specifically to the destination address.
-        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
-      orderIds:
-        type: array
-        items:
-          type: string
-        description: A list of orderIds that this pickup is related to.
-        example:
-          [
-            "93e11b39-0af8-40bb-742a-912375a09743",
-            "43e11a39-0af8-40bb-742a-962345z07582",
-            "93easle9-0af8-43bb-742a-962345z09623",
-          ]
-  OrderStatusPatchRequest:
-    title: Order Status Patch Request
-    properties:
-      id:
-        type: string
-        description: The new status of the order. Through the GoBolt API, the status can only be set to `PICKUP_READY`
-        example: "PICKUP_READY"
   AuthTokenRequest:
     title: Auth Token Request
     properties:
@@ -1264,21 +1063,6 @@ definitions:
         type: string
         description: The refresh token previously issued to the client. This value is required only if you are refreshing an access token.
         example: "DAV-aS9rquszIiQZqpZ8GCfMl"
-
-  PatchPickupOrderIdsReq:
-    title: Patch Pickup's orderIds request
-    properties:
-      orderIds:
-        type: array
-        items:
-          type: string
-        description: The list of orderIds we want to replace the pickup's one to.
-        example:
-          [
-            "2375a0as-0af8-40bb-742a-912375a09743",
-            "e11a3339-0af8-40bb-742a-962345ze11a3",
-            "ask12le9-0af8-43bb-742a-9623e11a3s23",
-          ]
 
   ServiceAccountResponse:
     title: Service Account response
@@ -1312,37 +1096,6 @@ definitions:
         description: A refresh token which your application can use to obtain another access token.
         example: "xzzf-j_37pZmRW2SixZPzCVC8aGo21U5"
 
-  ArrayOfWindows:
-    type: array
-    items:
-      type: object
-      properties:
-        weekday:
-          type: string
-          description: The weekday of this specific window (monday-sunday)
-        deliveryWindow:
-          type: object
-          description: Time window for delivery
-          $ref: "#/definitions/TimeWindow"
-        cutoffTime:
-          type: string
-          description: The cutoff time of this specific window (HH:mm)
-        date:
-          type: string
-          description: The date of this specific window (YYYY-MM-DD)
-    example:
-      - weekday: "wednesday"
-        deliveryWindow: { timeStart: "10:00", timeEnd: "13:00" }
-        cutoffTime: "08:00"
-        date: "2019-10-23"
-      - weekday: "wednesday"
-        deliveryWindow: { timeStart: "19:00", timeEnd: "22:00" }
-        cutoffTime: "13:00"
-        date: "2019-10-23"
-      - weekday: "thursday"
-        deliveryWindow: { timeStart: "10:00", timeEnd: "13:00" }
-        cutoffTime: "08:00"
-        date: "2019-10-24"
   ArrayOfRates:
     type: array
     items:
@@ -1418,7 +1171,7 @@ definitions:
           description: >-
             The current status of the order, could be 
             CREATED, GEOCODED, GEOCODEDFAILED, 
-            OUT_OF_FSA, PICKUP_READY, SHIPMENT_CREATED, 
+            OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, 
             SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
             FAILED, CANCELLED, ARCHIVED
           example: "GEOCODED"
@@ -1529,20 +1282,16 @@ definitions:
         "orders":
           [
             {
-              "tasks":
-                [
-                  {
-                    "shortId": "be8ba54c",
-                    "taskType": "DELIVERY",
-                    "id": "zkxji7GipDVxncbbo5Zc3uTS",
-                    "taskStatus": "UNASSIGNED",
-                  },
-                ],
-              "id": "4213-85e2-4686-a21c-4ca9889587a6",
+              "tasks": [],
+              "id": "FF4F198RNMV5",
               "createdAt": "2019-11-25T16:17:22.000Z",
               "merchantId": "05032132d9d-2132d7-4cad-8114-7b69a4124e740d8",
               "recipient":
-                { "phone": "+15142140475", "name": "Testing Testing" },
+                {
+                  "phone": "+15142140475",
+                  "name": "Testing Testing",
+                  "email": "testing@gobolt.com",
+                },
               "recipientAddress":
                 {
                   "number": "1234",
@@ -1567,27 +1316,39 @@ definitions:
                   "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
                 },
               "orderStatus": "GEOCODED",
-              "scanningRequired": true,
+              "signatureRequired": true,
               "validAddress": true,
               "notes": "Please knock, the buzzer is broken",
               "labelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.zpl",
               "pdfLabelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.pdf",
-              "packageCount": 2,
-            },
-            {
-              "tasks":
+              "packageCount": 1,
+              "packages":
                 [
                   {
-                    "taskType": "DELIVERY",
-                    "taskStatus": "UNASSIGNED",
-                    "id": "1234567890-5",
+                    "refNumber": "12345",
+                    "trackingNumber": "KC15YTWJ0EBV",
+                    "weightOptions": { "weight": 2.5, "unit": "kg" },
+                    "sizeOptions":
+                      {
+                        "length": 20,
+                        "width": 15,
+                        "height": 15,
+                        "unit": "inch",
+                      },
                   },
                 ],
-              "id": "1fe54116-bc32-4708-adbe-015c781238f2",
+            },
+            {
+              "tasks": [],
+              "id": "WJGPPKZDYJFM",
               "createdAt": "2019-11-22T23:48:27.000Z",
               "merchantId": "1242d9d-4ed7-4cad-8114-7b69afe740d8",
               "recipient":
-                { "phone": "+15142140475", "name": "Private Testing" },
+                {
+                  "phone": "+15142140475",
+                  "name": "Private Testing",
+                  "email": "testing@gobolt.com",
+                },
               "recipientAddress":
                 {
                   "number": "1234",
@@ -1612,10 +1373,25 @@ definitions:
                   "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
                 },
               "orderStatus": "GEOCODED",
-              "scanningRequired": true,
+              "signatureRequired": true,
               "validAddress": true,
               "notes": "Please knock, the buzzer is broken",
-              "packageCount": 2,
+              "packageCount": 1,
+              "packages":
+                [
+                  {
+                    "refNumber": "12345",
+                    "trackingNumber": "KIDJVDSABWVO",
+                    "weightOptions": { "weight": 2.5, "unit": "kg" },
+                    "sizeOptions":
+                      {
+                        "length": 20,
+                        "width": 15,
+                        "height": 15,
+                        "unit": "inch",
+                      },
+                  },
+                ],
             },
           ],
         "next":
