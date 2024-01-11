@@ -367,6 +367,46 @@ paths:
           description: "Success tracking response"
 
 definitions:
+  orderStatus:
+    type: string
+    enum: &orderStatus
+      - CREATED
+      - GEOCODEDFAILED
+      - OUT_OF_FSA
+      - RATE_FAILED
+      - GEOCODED
+      - PICKUP_READY
+      - CARRIER_PICKED_UP
+      - SHIPMENT_CREATED
+      - SHIPMENT_PROCESSING
+      - OUT_FOR_DELIVERY
+      - DELIVERED
+      - FAILED
+      - CANCELLED
+      - ARCHIVED
+
+  service:
+    type: string
+    enum: &service
+      - NEXTDAY
+      - SAMEDAY
+      - SCHEDULED
+      - CUSTOMER_BOOKING
+
+  deliveryService:
+    type: string
+    enum: &deliveryService
+      - THRESHOLD
+      - TO_THE_DOOR
+      - WHITE_GLOVE
+      - ROOM_OF_CHOICE
+
+  deliveryType:
+    type: string
+    enum: &deliveryType
+      - PARCEL
+      - HEAVY
+
   Recipient:
     title: Recipient
     type: object
@@ -699,12 +739,14 @@ definitions:
         example: 1
       service:
         type: string
-        default: "NEXTDAY"
-        description: >-
-          The service with which to create the order, which will determine the price and speed of the delivery.
-          The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
-          This can be the `service` from the GET /rates response.
-        example: "SAMEDAY"
+        enum: *service
+        default: NEXTDAY
+        description: The service of the order, which determines the price and speed of the delivery. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
+      deliveryService:
+        type: string
+        enum: *deliveryService
+        default: THRESHOLD
+        description: The delivery service of the order, which determines the level of service our staff provide when delivering the order. Mandatory when `CUSTOMER_BOOKING` service is selected.
       notes:
         type: string
         description: Any notes related specifically to the destination address.
@@ -805,7 +847,8 @@ definitions:
         example: 3
       status:
         type: string
-        description: The status of the order. Possible values are CREATED, GEOCODED, GEOCODED_FAILED, OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED, FAILED, CANCELLED, ARCHIVED
+        enum: *orderStatus
+        description: The status of the order.
         example: OUT_FOR_DELIVERY
       completeAfter:
         type: number
@@ -834,6 +877,7 @@ definitions:
               example: 1660053600000
             eventName:
               type: string
+              enum: *orderStatus
               description: Name of the event
               example: "SHIPMENT_PROCESSING"
             trackingNumber:
@@ -920,17 +964,14 @@ definitions:
         example: "13e11b39-0uf8-40bb-742a-913125a09743"
       orderStatus:
         type: string
-        description: >-
-          The current status of the order, could be 
-          CREATED, GEOCODED, GEOCODEDFAILED, 
-          OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, 
-          SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
-          FAILED, CANCELLED, ARCHIVED
+        enum: *orderStatus
+        description: The current status of the order
         example: "GEOCODED"
-      scanningRequired:
-        type: boolean
-        description: Tell if the order need scanning,
-        example: true
+      deliveryType:
+        type: string
+        enum: *deliveryType
+        description: The type of delivery based on the weight of the packages in an order.
+        example: PARCEL
       validAddress:
         type: boolean
         description: The address validity according to our validator.
@@ -959,69 +1000,15 @@ definitions:
         type: integer
         format: int32
         description: The number of separate packages to be delivered for this order, up to a maximum of 20.
-        example: 3
+        example: 1
       packages:
         type: array
         description: Array of packages on the order
-        items:
-          type: object
-          properties:
-            refNumber:
-              type: string
-              description: The reference number of the package.
-              example: "12345"
-            trackingNumber:
-              type: string
-              description: The tracking number of the package.
-              example: "KC15YTWJ0EBV"
-            weightOptions:
-              type: object
-              required:
-                - weight
-                - unit
-              properties:
-                weight:
-                  type: number
-                  format: double
-                  description: The weight of the package.
-                  example: 2.5
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
-                  example: kg
-            sizeOptions:
-              type: object
-              required:
-                - length
-                - width
-                - height
-                - unit
-              properties:
-                length:
-                  type: integer
-                  format: int32
-                  description: The length of the package.
-                  example: 20
-                width:
-                  type: integer
-                  format: int32
-                  description: The width of the package.
-                  example: 15
-                height:
-                  type: integer
-                  format: int32
-                  description: The height of the package.
-                  example: 15
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `cm` or `inch`.
-                  example: inch
+        $ref: "#/definitions/ArrayOfPackages"
       service:
         type: string
-        description: >-
-          The service with which to create the order, which will determine the price and speed of the delivery.
-          The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
-          This can be the `service` from the GET /rates response.
+        enum: *service
+        description: The service of the order, which determines the price and speed of the delivery. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
         example: "SAMEDAY"
       notes:
         type: string
@@ -1168,18 +1155,9 @@ definitions:
           example: "13e11b39-0uf8-40bb-742a-913125a09743"
         orderStatus:
           type: string
-          description: >-
-            The current status of the order, could be 
-            CREATED, GEOCODED, GEOCODEDFAILED, 
-            OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, 
-            SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
-            FAILED, CANCELLED, ARCHIVED
+          enum: *orderStatus
+          description: The current status of the order
           example: "GEOCODED"
-        scanningRequired:
-          type: boolean
-          default: true
-          description: Tell if the order need scanning,
-          example: true
         validAddress:
           type: boolean
           description: The address validity according to our validator.
@@ -1208,7 +1186,7 @@ definitions:
           type: integer
           format: int32
           description: The number of separate packages to be delivered for this order, up to a maximum of 20.
-          example: 3
+          example: 1
         packages:
           type: array
           description: Array of packages on the order
@@ -1267,6 +1245,7 @@ definitions:
                     example: inch
         service:
           type: string
+          enum: *service
           description: >-
             The service with which to create the order, which will determine the price and speed of the delivery.
             The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
