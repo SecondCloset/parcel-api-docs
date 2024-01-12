@@ -230,12 +230,12 @@ paths:
           default: 100
         - name: startAt
           in: query
-          description: The last order ID in the query. Omit when making an initial request.
+          description: The last order ID in the query. Optional when making an initial request.
           required: false
           type: string
         - name: createdAt
           in: query
-          description: The last order's createdAt value. Omit when making an initial request.
+          description: The date of creation of the last order in the query. Optional when making an initial request.
           required: false
           type: string
       responses:
@@ -777,7 +777,7 @@ definitions:
         $ref: "#/definitions/Location"
       timeline:
         type: array
-        description: A record of all the order's historical events
+        description: A record of all the order's historical events.
         items:
           type: object
           properties:
@@ -1079,5 +1079,5 @@ definitions:
             example: FF4F198RNMV5
           createdAt:
             type: string
-            description: The last order's createdAt value in the query.
+            description: The date of creation of the last order in the query.
             example: "2019-10-25T22:56:06.000Z"
