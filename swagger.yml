@@ -155,7 +155,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/RateOptions"
+            $ref: "#/definitions/GetRatesRequest"
       security:
         - Oauth2: []
         - Authorization-Header: []
@@ -224,17 +224,18 @@ paths:
       parameters:
         - name: limit
           in: query
-          description: limit of results
+          description: The number of results to be retrieved per request.
           required: false
           type: number
+          default: 100
         - name: startAt
           in: query
-          description: last order id, don't put it when first requested it
+          description: The last order ID in the query. Optional when making an initial request.
           required: false
           type: string
         - name: createdAt
           in: query
-          description: last order createdAt, don't put it when first requested it
+          description: The date of creation of the last order in the query. Optional when making an initial request.
           required: false
           type: string
       responses:
@@ -292,7 +293,7 @@ paths:
       tags:
         - "Orders"
       description: >-
-        This endpoint modifies the packages in an order. The length of the new packages object passed in must match the original package count of the order.
+        This endpoint modifies the packages in an order. The number of packages in the new package list must be the same as the original order. The weight of each new package should not exceed the weight limit set for the original order's delivery type. For instance, if the original order is labeled as `PARCEL`, the weights of the new packages must stay within the `PARCEL` limit.
       summary: Update the packages in an order.
       security:
         - OAuth2: []
@@ -307,7 +308,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/Packages"
+            $ref: "#/definitions/UpdateArrayOfPackages"
       responses:
         200:
           description: "Successful response"
@@ -367,6 +368,58 @@ paths:
           description: "Success tracking response"
 
 definitions:
+  orderStatus:
+    type: string
+    enum: &orderStatus
+      - CREATED
+      - GEOCODEDFAILED
+      - OUT_OF_FSA
+      - RATE_FAILED
+      - GEOCODED
+      - PICKUP_READY
+      - CARRIER_PICKED_UP
+      - SHIPMENT_CREATED
+      - SHIPMENT_PROCESSING
+      - OUT_FOR_DELIVERY
+      - DELIVERED
+      - FAILED
+      - CANCELLED
+      - ARCHIVED
+
+  packageStatus:
+    type: string
+    enum: &packageStatus
+      - CARRIER_PICKED_UP
+      - SHIPMENT_CREATED
+      - SHIPMENT_PROCESSING
+      - OUT_FOR_DELIVERY
+      - DELIVERED
+      - FAILED
+      - CANCELLED
+      - ARCHIVED
+
+  service:
+    type: string
+    enum: &service
+      - NEXTDAY
+      - SAMEDAY
+      - SCHEDULED
+      - CUSTOMER_BOOKING
+
+  deliveryService:
+    type: string
+    enum: &deliveryService
+      - THRESHOLD
+      - TO_THE_DOOR
+      - WHITE_GLOVE
+      - ROOM_OF_CHOICE
+
+  deliveryType:
+    type: string
+    enum: &deliveryType
+      - PARCEL
+      - HEAVY
+
   Recipient:
     title: Recipient
     type: object
@@ -485,7 +538,7 @@ definitions:
   SizeOptions:
     title: SizeOptions
     type: object
-    description: The size options for the order. Will return empty array if oversized. The maximum size is 85 inches (215.9cm) in size calculated by using the formula "length + grith (height*2 + width*2)"".
+    description: The dimensions of the package.
     properties:
       length:
         type: integer
@@ -512,7 +565,25 @@ definitions:
       - height
       - unit
 
-  Packages:
+  WeightOptions:
+    title: WeightOptions
+    type: object
+    description: The weight of the package. Orders will be classified as `HEAVY` if any of its package are over 50lbs.
+    properties:
+      weight:
+        type: integer
+        format: int32
+        description: The weight of the package
+        example: 20
+      unit:
+        type: string
+        description: The unit of weight for the package. Can be either `lb` or `kg`.
+        example: lb
+    required:
+      - weight
+      - unit
+
+  UpdateArrayOfPackages:
     title: Packages
     type: object
     description: Object containing an array of packages which contains the package information for size and weight.
@@ -532,52 +603,17 @@ definitions:
               example: "12345"
             trackingNumber:
               type: string
-              description: The tracking number of the package.
+              description: The tracking number of the package to be updated.
               example: "KC15YTWJ0EBV"
             weightOptions:
               type: object
-              required:
-                - weight
-                - unit
-              properties:
-                weight:
-                  type: number
-                  format: double
-                  description: The weight of the package.
-                  example: 2.5
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
-                  example: kg
+              $ref: "#/definitions/WeightOptions"
             sizeOptions:
               type: object
-              required:
-                - length
-                - width
-                - height
-                - unit
-              properties:
-                length:
-                  type: integer
-                  format: int32
-                  description: The length of the package.
-                  example: 20
-                width:
-                  type: integer
-                  format: int32
-                  description: The width of the package.
-                  example: 15
-                height:
-                  type: integer
-                  format: int32
-                  description: The height of the package.
-                  example: 15
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `cm` or `inch`.
-                  example: inch
+              $ref: "#/definitions/SizeOptions"
 
-  ArrayOfPackages:
+  CreateArrayOfPackages:
+    title: Packages
     type: array
     description: Array of packages which contains the package information for size and weight.
     items:
@@ -592,67 +628,39 @@ definitions:
           example: "12345"
         weightOptions:
           type: object
-          required:
-            - weight
-            - unit
-          properties:
-            weight:
-              type: number
-              format: double
-              description: The weight of the package.
-              example: 2.5
-            unit:
-              type: string
-              description: The unit of measurement for the package. Can be either `kg` or `lb`.
-              example: kg
+          $ref: "#/definitions/WeightOptions"
         sizeOptions:
           type: object
-          required:
-            - length
-            - width
-            - height
-            - unit
-          properties:
-            length:
-              type: integer
-              format: int32
-              description: The length of the package.
-              example: 20
-            width:
-              type: integer
-              format: int32
-              description: The width of the package.
-              example: 15
-            height:
-              type: integer
-              format: int32
-              description: The height of the package.
-              example: 15
-            unit:
-              type: string
-              description: The unit of measurement for the package. Can be either `cm` or `inch`.
-              example: inch
+          $ref: "#/definitions/SizeOptions"
 
-  WeightOptions:
-    title: WeightOptions
-    type: object
-    description: The weight options for the order. Will return empty array if overweight. Maximum weight is 44 lbs (20 kg).
-    properties:
-      weight:
-        type: integer
-        format: int32
-        description: The weight of the package
-        example: 20
-      unit:
-        type: string
-        description: The unit of weight for the package. Can be either `lb` or `kg`.
-        example: lb
-    required:
-      - weight
-      - unit
+  Packages:
+    title: Packages
+    type: array
+    description: Array of packages which contains the package information for size and weight.
+    items:
+      type: object
+      properties:
+        trackingNumber:
+          type: string
+          description: The ID used to identify and track the package.
+          example: RRRIPZUTSLVW
+        refNumber:
+          type: string
+          description: The reference number of the package.
+          example: "12345"
+        status:
+          type: string
+          description: The status of the package. This attribute does not exist if the package has not been received.
+          enum: *packageStatus
+        weightOptions:
+          type: object
+          $ref: "#/definitions/WeightOptions"
+        sizeOptions:
+          type: object
+          $ref: "#/definitions/SizeOptions"
 
-  RateOptions:
-    title: Rate options
+  GetRatesRequest:
+    title: Get Rates Request
     type: object
     required:
       - postalCode
@@ -667,10 +675,9 @@ definitions:
         example: "H4R2A4"
       packages:
         type: array
-        $ref: "#/definitions/ArrayOfPackages"
+        $ref: "#/definitions/CreateArrayOfPackages"
 
   OrderCreateRequest:
-    title: Create Order Request
     type: object
     required:
       - recipient
@@ -678,7 +685,6 @@ definitions:
       - originAddress
       - packageCount
       - packages
-      - signatureRequired
     properties:
       recipient:
         type: object
@@ -695,16 +701,18 @@ definitions:
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packages to be delivered for this order.
+        description: The number of separate packages to be delivered for this order, up to a maximum of 20.
         example: 1
       service:
         type: string
-        default: "NEXTDAY"
-        description: >-
-          The service with which to create the order, which will determine the price and speed of the delivery.
-          The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
-          This can be the `service` from the GET /rates response.
-        example: "SAMEDAY"
+        enum: *service
+        default: NEXTDAY
+        description: The service of the order, which determines the price and speed of the delivery. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
+      deliveryService:
+        type: string
+        enum: *deliveryService
+        default: THRESHOLD
+        description: The delivery service of the order, which determines the level of service our staff provide when delivering the order. Mandatory when `CUSTOMER_BOOKING` service is selected.
       notes:
         type: string
         description: Any notes related specifically to the destination address.
@@ -717,13 +725,10 @@ definitions:
         type: string
         description: A display name that's going to be shown in the order's label
         example: Metro Fleury No 2
-      signatureRequired:
-        type: boolean
-        description: (Deactivated for Covid-19) Always set to false. Flag to set signature required for this order
-        example: false
       packages:
         type: array
-        $ref: "#/definitions/ArrayOfPackages"
+        description: Array of packages belonging to the order
+        $ref: "#/definitions/CreateArrayOfPackages"
 
   OrderCreateSuccessResponse:
     title: Create Order Success Response
@@ -736,59 +741,7 @@ definitions:
       packages:
         type: array
         description: Array of packages on the order
-        items:
-          type: object
-          properties:
-            refNumber:
-              type: string
-              description: The reference number of the package.
-              example: "12345"
-            trackingNumber:
-              type: string
-              description: The tracking number of the package.
-              example: "KC15YTWJ0EBV"
-            weightOptions:
-              type: object
-              required:
-                - weight
-                - unit
-              properties:
-                weight:
-                  type: number
-                  format: double
-                  description: The weight of the package.
-                  example: 2.5
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
-                  example: kg
-            sizeOptions:
-              type: object
-              required:
-                - length
-                - width
-                - height
-                - unit
-              properties:
-                length:
-                  type: integer
-                  format: int32
-                  description: The length of the package.
-                  example: 20
-                width:
-                  type: integer
-                  format: int32
-                  description: The width of the package.
-                  example: 15
-                height:
-                  type: integer
-                  format: int32
-                  description: The height of the package.
-                  example: 15
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `cm` or `inch`.
-                  example: inch
+        $ref: "#/definitions/Packages"
 
   Tracking:
     title: Tracking Response
@@ -802,73 +755,58 @@ definitions:
       id:
         type: string
         description: The order's id. This is also the tracking number.
-        example: "DXPAWRPDD3HM"
       packageCount:
         type: number
         description: The number of packages in the order, up to a maximum of 20.
-        example: 3
       status:
         type: string
-        description: The status of the order. Possible values are CREATED, GEOCODED, GEOCODED_FAILED, OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, DELIVERED, FAILED, CANCELLED, ARCHIVED
-        example: OUT_FOR_DELIVERY
+        enum: *orderStatus
+        description: The status of the order.
       completeAfter:
         type: number
         description: Epoch millisecond timestamp of the start of the expected delivery window. This value is not based on a real-time ETA, but is calculated based on the merchant SLAs.
-        example: 1662474280264
       completeBefore:
         type: number
         description: Epoch millisecond timestamp of the end of the expected delivery window. This value is not based on a real-time ETA, but is calculated based on the merchant SLAs.
-        example: 1662474280264
       positionInLine:
         type: number
         description: The position of this delivery in the driver's route. This is equivalent to `number of stops remaining`. This value is only populated if the status is `OUT_FOR_DELIVERY`.
-        example: 3
       location:
         type: object
         description: The live GPS location of the driver executing the delivery. This value is only present when the status is `OUT_FOR_DELIVERY` and position in line is `1`.
         $ref: "#/definitions/Location"
       timeline:
         type: array
+        description: A record of all the order's historical events.
         items:
           type: object
           properties:
             timestamp:
               type: number
               description: Epoch millisecond timestamp of when the event took place.
-              example: 1660053600000
             eventName:
               type: string
+              enum: *orderStatus
               description: Name of the event
-              example: "SHIPMENT_PROCESSING"
             trackingNumber:
               type: string
               description: The order ID or an order's package's tracking number associated with the event
-              example: "KC15YTWJ0ENX"
             eventDescription:
               type: string
               description: The description of the event
-              example: "customer_refused"
             verificationPhotosUrls:
               type: array
               items:
                 type: string
               description: A list of URLs to download the proof of delivery images. This value is only present when the event is `DELIVERED`.
-              example:
-                [
-                  "https://res.cloudinary.com/second-closet/image/upload/v1668460528/appt_field_opts_verification/verification_image0_sxhxxi.jpg",
-                ]
             signaturePhotosUrls:
               type: array
               items:
                 type: string
               description: A list of URLs to download the delivery customer signature images. This value is only present when the event is `DELIVERED`.
-              example:
-                [
-                  "https://res.cloudinary.com/second-closet/image/upload/v1668461849/qju374g7jbcxe2qubzfs.png",
-                ]
     example:
       {
-        "id": "59AEXFGS6R28",
+        "id": "EBWIVCXADDHW",
         "packageCount": 1,
         "status": "OUT_FOR_DELIVERY",
         "completeAfter": 1668448800000,
@@ -878,27 +816,40 @@ definitions:
         "timeline":
           [
             {
-              "eventName": "SHIPMENT_CREATED",
-              "timestamp": 1668448733000,
+              "event": "CREATED",
               "trackingNumber": "EBWIVCXADDHW",
+              "timestamp": 1668448732000,
             },
             {
-              "eventName": "SHIPMENT_PROCESSING",
-              "timestamp": 1668461251000,
-              "trackingNumber": "ABWIVCXADDHW",
+              "description": "Address is valid",
+              "event": "GEOCODED",
+              "trackingNumber": "EBWIVCXADDHW",
+              "timestamp": 1668448732500,
             },
             {
-              "eventName": "OUT_FOR_DELIVERY",
-              "timestamp": 1668461252000,
-              "trackingNumber": "KKWIVCXADDHW",
-            },
-            {
-              "eventName": "FAILED",
-              "timestamp": 1668461456000,
+              "event": "SHIPMENT_PROCESSING",
               "trackingNumber": "OKWIVCXADDHW",
-              "eventDescription": "customer_refused",
+              "timestamp": 1668448733000,
             },
-            { "eventName": "OUT_FOR_DELIVERY", "timestamp": 1668462845000 },
+            {
+              "signaturePhotosUrls": [],
+              "event": "SHIPMENT_PROCESSING",
+              "trackingNumber": "EBWIVCXADDHW",
+              "verificationPhotosUrls": [],
+              "timestamp": 1668448733000,
+            },
+            {
+              "event": "OUT_FOR_DELIVERY",
+              "trackingNumber": "OKWIVCXADDHW",
+              "timestamp": 1668461252000,
+            },
+            {
+              "signaturePhotosUrls": [],
+              "event": "OUT_FOR_DELIVERY",
+              "trackingNumber": "EBWIVCXADDHW",
+              "verificationPhotosUrls": [],
+              "timestamp": 1668461252000,
+            },
           ],
       }
 
@@ -924,17 +875,32 @@ definitions:
         example: "13e11b39-0uf8-40bb-742a-913125a09743"
       orderStatus:
         type: string
-        description: >-
-          The current status of the order, could be 
-          CREATED, GEOCODED, GEOCODEDFAILED, 
-          OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, 
-          SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
-          FAILED, CANCELLED, ARCHIVED
+        enum: *orderStatus
+        description: The current status of the order
         example: "GEOCODED"
-      scanningRequired:
-        type: boolean
-        description: Tell if the order need scanning,
-        example: true
+      rateChoice:
+        type: object
+        description: The delivery service chosen to complete this order.
+        properties:
+          price:
+            type: number
+            description: The price for the rate in CAD.
+            example: 5.00
+          service:
+            type: string
+            enum: *service
+            description: The service of the order, which determines the price and speed of the delivery. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
+            example: "SAMEDAY"
+          deliveryService:
+            type: string
+            enum: *deliveryService
+            description: The delivery service of the order, which determines the level of service our staff provide when delivering the order. Mandatory when `CUSTOMER_BOOKING` service is selected.
+            example: "THRESHOLD"
+      deliveryType:
+        type: string
+        enum: *deliveryType
+        description: The type of delivery based on the weight of the packages in an order.
+        example: PARCEL
       validAddress:
         type: boolean
         description: The address validity according to our validator.
@@ -963,74 +929,11 @@ definitions:
         type: integer
         format: int32
         description: The number of separate packages to be delivered for this order, up to a maximum of 20.
-        example: 3
+        example: 1
       packages:
         type: array
         description: Array of packages on the order
-        items:
-          type: object
-          properties:
-            refNumber:
-              type: string
-              description: The reference number of the package.
-              example: "12345"
-            trackingNumber:
-              type: string
-              description: The tracking number of the package.
-              example: "KC15YTWJ0EBV"
-            weightOptions:
-              type: object
-              required:
-                - weight
-                - unit
-              properties:
-                weight:
-                  type: number
-                  format: double
-                  description: The weight of the package.
-                  example: 2.5
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `kg` or `lb`.
-                  example: kg
-            sizeOptions:
-              type: object
-              required:
-                - length
-                - width
-                - height
-                - unit
-              properties:
-                length:
-                  type: integer
-                  format: int32
-                  description: The length of the package.
-                  example: 20
-                width:
-                  type: integer
-                  format: int32
-                  description: The width of the package.
-                  example: 15
-                height:
-                  type: integer
-                  format: int32
-                  description: The height of the package.
-                  example: 15
-                unit:
-                  type: string
-                  description: The unit of measurement for the package. Can be either `cm` or `inch`.
-                  example: inch
-      signatureRequired:
-        type: boolean
-        description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep. This value can no longer be set for individual orders. It is a merchant wide setting.
-        example: true
-      service:
-        type: string
-        description: >-
-          The service with which to create the order, which will determine the price and speed of the delivery.
-          The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
-          This can be the `service` from the GET /rates response.
-        example: "SAMEDAY"
+        $ref: "#/definitions/Packages"
       notes:
         type: string
         description: Any notes related specifically to the destination address.
@@ -1114,7 +1017,8 @@ definitions:
           description: The price for the rate in CAD.
         service:
           type: string
-          description: A code representing the service level for the rate. Possible values are `SAMEDAY`, `NEXTDAY` and `SCHEDULED`
+          enum: *service
+          description: A code representing the service level for the rate. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
         name:
           type: string
           description: The human readable name for the rate.
@@ -1147,269 +1051,33 @@ definitions:
         estimateTo: "2019-10-29"
       - price: 12
         service: "SCHEDULED"
-        name: "Boxknight Scheduled Delivery"
+        name: "GoBolt Scheduled Delivery"
         description: "Get your package in a 3h window within the next 2 weeks (2019-10-29 to 2019-11-11)"
         estimateDay: "2019-10-29 to 2019-11-11"
         estimateFrom: "2019-10-29"
         estimateTo: "2019-11-11"
 
   ArrayOfOrders:
-    type: array
-    items:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The order's id
-          example: "93e11b39-0af8-40bb-742a-912375a09743"
-        createdAt:
-          type: string
-          description: Datetime of the order's creation in ISO time
-          example: "2019-10-25T22:56:06.000Z"
-        createdBy:
-          type: string
-          description: Service account's id
-          example: "93e66b39-0uf8-40bb-742a-911235a09743"
-        merchantId:
-          type: string
-          description: The merchant's id
-          example: "13e11b39-0uf8-40bb-742a-913125a09743"
-        orderStatus:
-          type: string
-          description: >-
-            The current status of the order, could be 
-            CREATED, GEOCODED, GEOCODEDFAILED, 
-            OUT_OF_FSA, PICKUP_READY, CARRIER_PICKED_UP, SHIPMENT_CREATED, 
-            SHIPMENT_PROCESSING, OUT_FOR_DELIVERY, 
-            FAILED, CANCELLED, ARCHIVED
-          example: "GEOCODED"
-        scanningRequired:
-          type: boolean
-          default: true
-          description: Tell if the order need scanning,
-          example: true
-        validAddress:
-          type: boolean
-          description: The address validity according to our validator.
-          example: true
-        labelUrl:
-          type: string
-          description: The URL to download the order's ZPL label
-          example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.zpl"
-        pdfLabelUrl:
-          type: string
-          description: The URL to download the order's PDF label
-          example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.pdf"
-        recipient:
+    type: object
+    properties:
+      orders:
+        type: array
+        items:
           type: object
-          description: The recipient of the order to be delivered.
-          $ref: "#/definitions/Recipient"
-        recipientAddress:
-          type: object
-          description: The address of the recipient.
-          $ref: "#/definitions/Geocoded_Address"
-        originAddress:
-          type: object
-          description: The address of where the order should be picked up from
-          $ref: "#/definitions/Geocoded_Address"
-        packageCount:
-          type: integer
-          format: int32
-          description: The number of separate packages to be delivered for this order, up to a maximum of 20.
-          example: 3
-        packages:
-          type: array
-          description: Array of packages on the order
-          items:
-            type: object
-            properties:
-              refNumber:
-                type: string
-                description: The reference number of the package.
-                example: "12345"
-              trackingNumber:
-                type: string
-                description: The tracking number of the package.
-                example: "KC15YTWJ0EBV"
-              weightOptions:
-                type: object
-                required:
-                  - weight
-                  - unit
-                properties:
-                  weight:
-                    type: number
-                    format: double
-                    description: The weight of the package.
-                    example: 2.5
-                  unit:
-                    type: string
-                    description: The unit of measurement for the package. Can be either `kg` or `lb`.
-                    example: kg
-              sizeOptions:
-                type: object
-                required:
-                  - length
-                  - width
-                  - height
-                  - unit
-                properties:
-                  length:
-                    type: integer
-                    format: int32
-                    description: The length of the package.
-                    example: 20
-                  width:
-                    type: integer
-                    format: int32
-                    description: The width of the package.
-                    example: 15
-                  height:
-                    type: integer
-                    format: int32
-                    description: The height of the package.
-                    example: 15
-                  unit:
-                    type: string
-                    description: The unit of measurement for the package. Can be either `cm` or `inch`.
-                    example: inch
-        signatureRequired:
-          type: boolean
-          description: If True, the delivery will not be completed unless a signature is collected from the recipient. If false, best efforts will be made to contact the recipient upon arrival at the recipient address, but may ultimately be left at the doorstep.
-          example: true
-        service:
-          type: string
-          description: >-
-            The service with which to create the order, which will determine the price and speed of the delivery.
-            The possible values are `SAMEDAY`, `NEXTDAY` or `SCHEDULED`.
-            This can be the `service` from the GET /rates response.
-          example: "SAMEDAY"
-        notes:
-          type: string
-          description: Any notes related specifically to the destination address.
-          example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
-
-    example:
-      {
-        "orders":
-          [
-            {
-              "tasks": [],
-              "id": "FF4F198RNMV5",
-              "createdAt": "2019-11-25T16:17:22.000Z",
-              "merchantId": "05032132d9d-2132d7-4cad-8114-7b69a4124e740d8",
-              "recipient":
-                {
-                  "phone": "+15142140475",
-                  "name": "Testing Testing",
-                  "email": "testing@gobolt.com",
-                },
-              "recipientAddress":
-                {
-                  "number": "1234",
-                  "street": "Avenue Holland",
-                  "postalCode": "H4A 3C9",
-                  "city": "Montréal",
-                  "sublocality": "Communauté-Urbaine-de-Montréal",
-                  "province": "Québec",
-                  "country": "Canada",
-                  "location": { "lat": 45.6755719, "lng": -73.21911979999999 },
-                },
-              "createdBy": "13248f165-3757-4be0-96538-ae064833c8b3",
-              "originAddress":
-                {
-                  "number": "3333",
-                  "street": "Boulevard Bourassa",
-                  "postalCode": "H4R 2A4",
-                  "city": "Montréal",
-                  "sublocality": "Communauté-Urbaine-de-Montréal",
-                  "province": "Québec",
-                  "country": "Canada",
-                  "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
-                },
-              "orderStatus": "GEOCODED",
-              "signatureRequired": true,
-              "validAddress": true,
-              "notes": "Please knock, the buzzer is broken",
-              "labelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.zpl",
-              "pdfLabelUrl": "https://labelss3bucketdev1.s3.amazonaws.com/GoBolt-ShippingLabel-123.pdf",
-              "packageCount": 1,
-              "packages":
-                [
-                  {
-                    "refNumber": "12345",
-                    "trackingNumber": "KC15YTWJ0EBV",
-                    "weightOptions": { "weight": 2.5, "unit": "kg" },
-                    "sizeOptions":
-                      {
-                        "length": 20,
-                        "width": 15,
-                        "height": 15,
-                        "unit": "inch",
-                      },
-                  },
-                ],
-            },
-            {
-              "tasks": [],
-              "id": "WJGPPKZDYJFM",
-              "createdAt": "2019-11-22T23:48:27.000Z",
-              "merchantId": "1242d9d-4ed7-4cad-8114-7b69afe740d8",
-              "recipient":
-                {
-                  "phone": "+15142140475",
-                  "name": "Private Testing",
-                  "email": "testing@gobolt.com",
-                },
-              "recipientAddress":
-                {
-                  "number": "1234",
-                  "street": "Avenue Holland",
-                  "postalCode": "H4A 3C9",
-                  "city": "Montréal",
-                  "sublocality": "Communauté-Urbaine-de-Montréal",
-                  "province": "Québec",
-                  "country": "Canada",
-                  "location": { "lat": 45.6755719, "lng": -73.21911979999999 },
-                },
-              "createdBy": "21348f165-3757-4be0-96538-ae1234833c8b3",
-              "originAddress":
-                {
-                  "number": "3333",
-                  "street": "Boulevard Bourassa",
-                  "postalCode": "H4R 2A4",
-                  "city": "Montréal",
-                  "sublocality": "Communauté-Urbaine-de-Montréal",
-                  "province": "Québec",
-                  "country": "Canada",
-                  "location": { "lat": 45.4934762, "lng": -73.72103080000001 },
-                },
-              "orderStatus": "GEOCODED",
-              "signatureRequired": true,
-              "validAddress": true,
-              "notes": "Please knock, the buzzer is broken",
-              "packageCount": 1,
-              "packages":
-                [
-                  {
-                    "refNumber": "12345",
-                    "trackingNumber": "KIDJVDSABWVO",
-                    "weightOptions": { "weight": 2.5, "unit": "kg" },
-                    "sizeOptions":
-                      {
-                        "length": 20,
-                        "width": 15,
-                        "height": 15,
-                        "unit": "inch",
-                      },
-                  },
-                ],
-            },
-          ],
-        "next":
-          {
-            "limit": "2",
-            "startAt": "1fe54116-bc32-4708-adbe-015c784358f2",
-            "createdAt": "2019-12-02T20:45:12.000Z",
-          },
-      }
+          $ref: "#/definitions/Order"
+      next:
+        type: object
+        properties:
+          limit:
+            type: number
+            format: int32
+            description: The limit on the number of results retrieved.
+            example: 1
+          startAt:
+            type: string
+            description: The last order ID in the query.
+            example: FF4F198RNMV5
+          createdAt:
+            type: string
+            description: The date of creation of the last order in the query.
+            example: "2019-10-25T22:56:06.000Z"
