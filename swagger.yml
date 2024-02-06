@@ -711,7 +711,7 @@ definitions:
       deliveryService:
         type: string
         enum: *deliveryService
-        default: THRESHOLD
+        default: TO_THE_DOOR
         description: The delivery service of the order, which determines the level of service our staff provide when delivering the order. Mandatory when `CUSTOMER_BOOKING` service is selected.
       notes:
         type: string
