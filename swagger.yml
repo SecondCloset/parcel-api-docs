@@ -404,6 +404,7 @@ definitions:
       - NEXTDAY
       - SAMEDAY
       - SCHEDULED
+      - FLEX
       - CUSTOMER_BOOKING
 
   deliveryService:
