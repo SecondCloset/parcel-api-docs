@@ -1043,6 +1043,13 @@ definitions:
         estimateDay: "2019-10-30"
         estimateFrom: "2019-10-30"
         estimateTo: "2019-10-30"
+      - price: 10
+        service: "FLEX"
+        name: "GoBolt Flex Delivery"
+        description: "Get your package within a flexible timeframe. (2024-04-04 to 2024-04-08)"
+        estimateDay: "2024-04-04 to 2024-04-08"
+        estimateFrom: "2024-04-04"
+        estimateTo: "2024-04-08"
       - price: 12
         service: "SAMEDAY"
         name: "GoBolt Same-Day Delivery"
