@@ -906,14 +906,6 @@ definitions:
         type: boolean
         description: The address validity according to our validator.
         example: true
-      labelUrl:
-        type: string
-        description: The URL to download the order's ZPL label
-        example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.zpl"
-      pdfLabelUrl:
-        type: string
-        description: The URL to download the order's PDF label
-        example: "https://label12345.s3.amazonaws.com/GoBolt-ShippingLabel-1234567.pdf"
       recipient:
         type: object
         description: The recipient of the order to be delivered.
