@@ -578,7 +578,11 @@ definitions:
         example: 20
       unit:
         type: string
-        description: The unit of weight for the package. Can be either `lb` or `kg`.
+        description: |-
+          The unit of weight for the package. Can be either:
+          - `lb`
+          - `g`
+          - `kg`
         example: lb
     required:
       - weight
