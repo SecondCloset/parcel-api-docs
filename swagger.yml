@@ -543,11 +543,11 @@ definitions:
       country:
         type: string
         description: The country
-        example: Canada
+        example: CA
       province:
         type: string
         description: The province or state
-        example: Ontario
+        example: ON
       city:
         type: string
         description: The city
