@@ -392,15 +392,16 @@ definitions:
       - GEOCODEDFAILED
       - OUT_OF_FSA
       - RATE_FAILED
+      - UNSUPPORTED_WEIGHT
       - GEOCODED
       - PICKUP_READY
       - CARRIER_PICKED_UP
       - SHIPMENT_CREATED
       - SHIPMENT_PROCESSING
+      - RECEIVED_AT_DESTINATION
       - OUT_FOR_DELIVERY
       - DELIVERED
       - FAILED
-      - CANCELLED
       - ARCHIVED
 
   packageStatus:
@@ -412,7 +413,6 @@ definitions:
       - OUT_FOR_DELIVERY
       - DELIVERED
       - FAILED
-      - CANCELLED
       - ARCHIVED
 
   service:
@@ -832,7 +832,52 @@ definitions:
               description: The order ID or an order's package's tracking number associated with the event
             eventDescription:
               type: string
-              description: The description of the event
+              description: |-
+                The description of the events.
+                
+                The `eventDescription` is a human-readable version of the `eventName` Below is a mapping of the event with its corresponding description(s).
+
+                - `CREATED`:
+                  - `Order has been created`
+                - `GEOCODEDFAILED`:
+                  - `Address validation unsuccessful`
+                - `OUT_OF_FSA`:
+                  - `Address is out of service area`
+                - `RATE_FAILED`:
+                  - `Rates for this order could not be generated`
+                - `UNSUPPORTED_WEIGHT`:
+                  - `Order weight is outside of the supported weight band`
+                - `GEOCODED`:
+                  - `Address has been validated`
+                - `PICKUP_READY`:
+                  - `Packages are ready for pick-up`
+                - `CARRIER_PICKED_UP`:
+                  - `Carrier has picked up the packages`
+                - `SHIPMENT_CREATED`:
+                  - `The shipment has been created for this order`
+                - `SHIPMENT_PROCESSING`:
+                  - `The shipment for this order is underway`
+                - `RECEIVED_AT_DESTINATION`:
+                  - `Packages have been received at GoBolt facility`
+                - `OUT_FOR_DELIVERY`:
+                  - `Packages are out for delivery`
+                - `FAILED` (can be one of the following):
+                  - `Your delivery was unsuccessful`
+                  - `Your delivery was unsuccessful because we weren't able to get in touch with you`
+                  - `Your delivery was unsuccessful because you refused your order`
+                  - `Your delivery was unsuccessful because we had an issue with loading your package`
+                  - `Your delivery was unsuccessful because there was an issue with your address`
+                  - `Your delivery was unsuccessful because we weren't able to get in touch with you`
+                  - `Your delivery was unsuccessful because the business was closed`
+                  - `Your delivery was unsuccessful because we weren't able to safely drop your package`
+                  - `Your delivery was unsuccessful because we couldn't make it there`
+                  - `Your delivery was unsuccessful because one or more of your items was damaged`
+                  - `Your delivery was unsuccessful because you refused your order`
+                  - `Your delivery was unsuccessful because we had an issue on route`
+                - `DELIVERED`:
+                  - `Packages have been delivered`
+                - `ARCHIVED`:
+                  - `Order has been archived`
             verificationPhotosUrls:
               type: array
               items:
@@ -859,7 +904,8 @@ definitions:
         "timeline":
           [
             {
-              "event": "CREATED",
+              "eventName": "CREATED",
+              "eventDescription": "Order has been created",
               "trackingNumber": "EBWIVCXADDHW",
               "timestamp": 1668448732000,
               "location": 
@@ -867,11 +913,11 @@ definitions:
                   "country": "CA",
                   "province": "ON",
                   "city": "Toronto"
-                }
+                },
             },
             {
-              "description": "Address is valid",
-              "event": "GEOCODED",
+              "eventName": "GEOCODED",
+              "eventDescription": "Address validation unsuccessful",
               "trackingNumber": "EBWIVCXADDHW",
               "timestamp": 1668448732500,
               "location": 
@@ -882,7 +928,8 @@ definitions:
                 }
             },
             {
-              "event": "SHIPMENT_PROCESSING",
+              "eventName": "SHIPMENT_PROCESSING",
+              "eventDescription": "The shipment for this order is underway",
               "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668448733000,
               "location": 
@@ -894,7 +941,8 @@ definitions:
             },
             {
               "signaturePhotosUrls": [],
-              "event": "SHIPMENT_PROCESSING",
+              "eventName": "SHIPMENT_PROCESSING",
+              "eventDescription": "The shipment for this order is underway",
               "trackingNumber": "EBWIVCXADDHW",
               "verificationPhotosUrls": [],
               "timestamp": 1668448733000,
@@ -906,7 +954,8 @@ definitions:
                 }
             },
             {
-              "event": "OUT_FOR_DELIVERY",
+              "eventName": "OUT_FOR_DELIVERY",
+              "eventDescription": "Packages are out for delivery",
               "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668461252000,
               "location": 
@@ -918,7 +967,8 @@ definitions:
             },
             {
               "signaturePhotosUrls": [],
-              "event": "OUT_FOR_DELIVERY",
+              "eventName": "OUT_FOR_DELIVERY",
+              "eventDescription": "Packages are out for delivery",
               "trackingNumber": "EBWIVCXADDHW",
               "verificationPhotosUrls": [],
               "timestamp": 1668461252000,
