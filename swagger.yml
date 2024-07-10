@@ -535,6 +535,23 @@ definitions:
         type: number
         description: The longitude value of the location
         example: -73.61911979999999
+  
+  LocationSummary:
+    title: Location Summary
+    type: object
+    properties:
+      country:
+        type: string
+        description: The country
+        example: CA
+      province:
+        type: string
+        description: The province or state
+        example: ON
+      city:
+        type: string
+        description: The city
+        example: Toronto
 
   SizeOptions:
     title: SizeOptions
@@ -809,6 +826,10 @@ definitions:
               items:
                 type: string
               description: A list of URLs to download the delivery customer signature images. This value is only present when the event is `DELIVERED`.
+            location:
+              type: object
+              description: The general location of where the event took place.
+              $ref: "#/definitions/LocationSummary"
     example:
       {
         "id": "EBWIVCXADDHW",
@@ -824,17 +845,35 @@ definitions:
               "event": "CREATED",
               "trackingNumber": "EBWIVCXADDHW",
               "timestamp": 1668448732000,
+              "location": 
+                {
+                  "country": "CA",
+                  "province": "ON",
+                  "city": "Toronto"
+                }
             },
             {
               "description": "Address is valid",
               "event": "GEOCODED",
               "trackingNumber": "EBWIVCXADDHW",
               "timestamp": 1668448732500,
+              "location": 
+                {
+                  "country": "CA",
+                  "province": "ON",
+                  "city": "Toronto"
+                }
             },
             {
               "event": "SHIPMENT_PROCESSING",
               "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668448733000,
+              "location": 
+                {
+                  "country": "CA",
+                  "province": "ON",
+                  "city": "Toronto"
+                }
             },
             {
               "signaturePhotosUrls": [],
@@ -842,11 +881,23 @@ definitions:
               "trackingNumber": "EBWIVCXADDHW",
               "verificationPhotosUrls": [],
               "timestamp": 1668448733000,
+              "location": 
+                {
+                  "country": "CA",
+                  "province": "ON",
+                  "city": "Toronto"
+                }
             },
             {
               "event": "OUT_FOR_DELIVERY",
               "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668461252000,
+              "location": 
+                {
+                  "country": "CA",
+                  "province": "ON",
+                  "city": "Toronto"
+                }
             },
             {
               "signaturePhotosUrls": [],
@@ -854,6 +905,12 @@ definitions:
               "trackingNumber": "EBWIVCXADDHW",
               "verificationPhotosUrls": [],
               "timestamp": 1668461252000,
+              "location": 
+                {
+                  "country": "CA",
+                  "province": "ON",
+                  "city": "Toronto"
+                }
             },
           ],
       }
