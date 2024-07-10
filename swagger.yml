@@ -170,25 +170,42 @@ paths:
       tags:
         - "Labels"
       description: >-
-        This endpoint retrieves a label (zpl, pdf or pdf_letter) from an orderId. The pdf_letter format fits a full standard letter page with a dotted line to cut the label.
+        This endpoint retrieves a label from an orde ID.
       summary: Retrieve Labels
       parameters:
         - name: orderId
           in: path
           description: The id of the order that we want to get the label from
           required: true
-          type: string
+          schema:
+            type: string
         - name: format
           in: query
-          description: format of the label (zpl, pdf or pdf_letter)
+          description: Desired format of the label. The `PDF_LETTER` format fits a full standard letter page with a dotted line to cut the label. Formats `PDF` and `PDF_LETTER` will respond with PDF files.
           required: true
-          type: string
+          schema:
+            type: string
+            enum:
+              - ZPL
+              - PDF
+              - PNG
+              - PDF_BASE64
+              - PDF_LETTER
+
       security:
         - Oauth2: []
         - Authorization-Header: []
       responses:
         200:
-          description: "the label in zpl or pdf file"
+          description: The label in indicated format
+          examples:
+            zpl:
+              $ref: "#/components/examples/zplExample"
+            png:
+              $ref: "#/components/examples/pngExample"
+            pdf_base64:
+              $ref: "#/components/examples/pdfBase64Example"
+
   /orders:
     x-summary: Orders
     post:
@@ -535,7 +552,7 @@ definitions:
         type: number
         description: The longitude value of the location
         example: -73.61911979999999
-  
+
   LocationSummary:
     title: Location Summary
     type: object
@@ -1142,3 +1159,13 @@ definitions:
             type: string
             description: The date of creation of the last order in the query.
             example: "2019-10-25T22:56:06.000Z"
+
+components:
+  examples:
+    zplExample: "^XA^FO100,100^B3N,N,100,Y,N^FD123456^FS^XZ"
+    pngExample:
+      url: "https://res.cloudinary.com/second-closet/image/upload/v1720639681/LTWSJELEB7JK.png"
+    pdfBase64Example:
+      orderId: "LTWSJELEB7JK"
+      carrier: "GoBolt"
+      label: "JVBERi0xLjMKJf////8KMTMgMCBvYmoKPDwKL1ByZWRpY3RvciAxNQovQ29sb3JzIDEK..."
