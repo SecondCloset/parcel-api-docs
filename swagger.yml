@@ -170,7 +170,7 @@ paths:
       tags:
         - "Labels"
       description: >-
-        This endpoint retrieves a label from an orde ID.
+        This endpoint retrieves a label from an order ID.
       summary: Retrieve Labels
       parameters:
         - name: orderId
