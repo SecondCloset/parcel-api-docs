@@ -917,7 +917,7 @@ definitions:
             },
             {
               "eventName": "GEOCODED",
-              "eventDescription": "Address validation unsuccessful",
+              "eventDescription": "Address has been validated",
               "trackingNumber": "EBWIVCXADDHW",
               "timestamp": 1668448732500,
               "location": 
