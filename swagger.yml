@@ -446,6 +446,7 @@ definitions:
         type: string
         description: The full name of the recipient.
         example: Charles Carmichael
+        maxLength: 82
       phone:
         type: string
         description: The phone number of the recipient in the following format +1<area code><10 digit phone number>
@@ -472,10 +473,12 @@ definitions:
         type: string
         description: The street number and street name of the address. If needed, the street number postfix can be included as well.
         example: 4455A Boul. Poirier
+        maxLength: 82
       unit:
         type: string
         description: The unit, apartment and/or business name of the address. This property is not parsed during the geolocation of the address and can be descriptive.
         example: unit204 - GoBolt HQ
+        maxLength: 82
       city:
         type: string
         description: The city or municipality of the address.
