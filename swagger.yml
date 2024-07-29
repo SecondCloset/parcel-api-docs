@@ -478,7 +478,7 @@ definitions:
         type: string
         description: The unit, apartment and/or business name of the address. This property is not parsed during the geolocation of the address and can be descriptive.
         example: unit204 - GoBolt HQ
-        maxLength: 82
+        maxLength: 50
       city:
         type: string
         description: The city or municipality of the address.
