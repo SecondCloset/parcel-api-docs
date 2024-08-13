@@ -403,6 +403,7 @@ definitions:
       - DELIVERED
       - FAILED
       - ARCHIVED
+      - RETURN_TO_SENDER
 
   packageStatus:
     type: string
@@ -410,10 +411,12 @@ definitions:
       - CARRIER_PICKED_UP
       - SHIPMENT_CREATED
       - SHIPMENT_PROCESSING
+      - RECEIVED_AT_DESTINATION
       - OUT_FOR_DELIVERY
       - DELIVERED
       - FAILED
       - ARCHIVED
+      - RETURN_TO_SENDER
 
   service:
     type: string
@@ -879,6 +882,8 @@ definitions:
                   - `Your delivery was unsuccessful because we had an issue on route`
                 - `DELIVERED`:
                   - `Packages have been delivered`
+                - `RETURN_TO_SENDER`:
+                  - `Returning package to merchant`
                 - `ARCHIVED`:
                   - `Order has been archived`
             verificationPhotosUrls:
