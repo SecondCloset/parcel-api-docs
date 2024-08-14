@@ -860,32 +860,32 @@ definitions:
                 - `CARRIER_PICKED_UP`:
                   - `Carrier has picked up the packages`
                 - `SHIPMENT_CREATED`:
-                  - `The shipment has been created for this order`
+                  - `Shipment created`
                 - `SHIPMENT_PROCESSING`:
-                  - `The shipment for this order is underway`
+                  - `Package received in %{city}`
                 - `RECEIVED_AT_DESTINATION`:
-                  - `Packages have been received at GoBolt facility`
+                  - `Package received in local facility`
                 - `OUT_FOR_DELIVERY`:
-                  - `Packages are out for delivery`
+                  - `Package has left warehouse`
                 - `FAILED` (can be one of the following):
-                  - `Your delivery was unsuccessful`
-                  - `Your delivery was unsuccessful because we weren't able to get in touch with you`
-                  - `Your delivery was unsuccessful because you refused your order`
-                  - `Your delivery was unsuccessful because we had an issue with loading your package`
-                  - `Your delivery was unsuccessful because there was an issue with your address`
-                  - `Your delivery was unsuccessful because we weren't able to get in touch with you`
-                  - `Your delivery was unsuccessful because the business was closed`
-                  - `Your delivery was unsuccessful because we weren't able to safely drop your package`
-                  - `Your delivery was unsuccessful because we couldn't make it there`
-                  - `Your delivery was unsuccessful because one or more of your items was damaged`
-                  - `Your delivery was unsuccessful because you refused your order`
-                  - `Your delivery was unsuccessful because we had an issue on route`
+                  - `Delivery unsuccessful`
+                  - `Delivery unsuccessful - loading issue`
+                  - `Delivery unsuccessful - address issue`
+                  - `Delivery attempted - customer not at home`
+                  - `Delivery attempted - business closed`
+                  - `Delivery attempted - unable to drop`
+                  - `Delivery unsuccessful - unable to access`
+                  - `Delivery unsuccessful - damaged items`
+                  - `Delivery attempted - refused by customer`
+                  - `Delivery unsuccessful - issue on route`
+                  - `Delivery unsuccessful - lost package`
+                  - `Delivery unsuccessful - return to merchant`
                 - `DELIVERED`:
-                  - `Packages have been delivered`
+                  - `Package delivered`
                 - `RETURN_TO_SENDER`:
                   - `Returning package to merchant`
                 - `ARCHIVED`:
-                  - `Order has been archived`
+                  - `Delivery cancelled`
             verificationPhotosUrls:
               type: array
               items:
