@@ -671,6 +671,12 @@ definitions:
           type: string
           description: The reference number of the package.
           example: "12345"
+        trackingNumber:
+          type: string
+          minLength: 12
+          maxLength: 12
+          description: The alphanumeric tracking number of the package.
+          example: "ABCDEF011234"
         weightOptions:
           type: object
           $ref: "#/definitions/WeightOptions"
