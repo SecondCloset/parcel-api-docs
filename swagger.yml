@@ -812,7 +812,7 @@ definitions:
         description: The number of packages in the order, up to a maximum of 20.
       packageNumbers:
         type: array
-        description: Array of package tracking numbers for the order
+        description: Array of package tracking numbers on the order
         items:
           type: string
       status:
@@ -916,7 +916,7 @@ definitions:
       {
         "id": "EBWIVCXADDHW",
         "packageCount": 1,
-        "packageNumbers": ['OKWIVCXADDHW'],
+        "packageNumbers": ["OKWIVCXADDHW"],
         "status": "OUT_FOR_DELIVERY",
         "completeAfter": 1668448800000,
         "completeBefore": 1668481200000,
