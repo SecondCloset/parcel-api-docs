@@ -356,20 +356,20 @@ paths:
           description: "Successful response"
 
   /tracking/orders/{id}:
-    x-summary: Get the tracking information of an order by order id.
+    x-summary: Get the tracking information of an order by order id or package tracking number.
     get:
       tags:
         - "Tracking"
       description: >-
         This endpoint returns the tracking information for an order. If the request includes the valid postal code associated with the order being retrieved in the query string parameters, the endpoint will return a detailed tracking response. This may include live tracking information if available.
-      summary: Get the tracking information of an order by order id.
+      summary: Get the tracking information of an order by order id or package tracking number.
       security:
         - OAuth2: []
         - Authorization-Header: []
       parameters:
         - name: id
           in: path
-          description: The id of the order for which tracking information is being requested.
+          description: The identifier of the order or package for which tracking information is being requested.
           required: true
           type: string
         - name: showPackageTracking
