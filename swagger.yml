@@ -404,6 +404,7 @@ definitions:
       - FAILED
       - ARCHIVED
       - RETURN_TO_SENDER
+      - LOST
 
   packageStatus:
     type: string
@@ -417,6 +418,7 @@ definitions:
       - FAILED
       - ARCHIVED
       - RETURN_TO_SENDER
+      - LOST
 
   service:
     type: string
@@ -898,6 +900,8 @@ definitions:
                   - `Returning package to merchant`
                 - `ARCHIVED`:
                   - `Delivery cancelled`
+                - `LOST`:
+                  - `Package is lost`
             verificationPhotosUrls:
               type: array
               items:
