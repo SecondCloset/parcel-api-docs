@@ -1100,6 +1100,10 @@ definitions:
         type: string
         description: A display name that's going to be shown in the order's label
         example: Metro Fleury No 2
+      sortCode:
+        type: string
+        description: A zone code designated based on the customer's postal address
+        example: "A"
 
   AuthTokenRequest:
     title: Auth Token Request
