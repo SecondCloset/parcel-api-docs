@@ -424,7 +424,6 @@ definitions:
     type: string
     enum: &service
       - NEXTDAY
-      - SAMEDAY
       - SCHEDULED
       - FLEX
       - CUSTOMER_BOOKING
@@ -1044,7 +1043,7 @@ definitions:
             type: string
             enum: *service
             description: The service of the order, which determines the price and speed of the delivery. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
-            example: "SAMEDAY"
+            example: "NEXTDAY"
           deliveryService:
             type: string
             enum: *deliveryService
@@ -1199,13 +1198,6 @@ definitions:
         estimateDay: "2024-04-04 to 2024-04-08"
         estimateFrom: "2024-04-04"
         estimateTo: "2024-04-08"
-      - price: 12
-        service: "SAMEDAY"
-        name: "GoBolt Same-Day Delivery"
-        description: "Get your package before the end of the day (2019-10-29)"
-        estimateDay: "2019-10-29"
-        estimateFrom: "2019-10-29"
-        estimateTo: "2019-10-29"
       - price: 12
         service: "SCHEDULED"
         name: "GoBolt Scheduled Delivery"
