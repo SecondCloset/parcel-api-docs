@@ -310,7 +310,7 @@ paths:
       tags:
         - "Orders"
       description: >-
-        This endpoint modifies the packages in an order. The number of packages in the new package list must be the same as the original order. The weight of each new package should not exceed the weight limit set for the original order's delivery type. For instance, if the original order is labeled as `PARCEL`, the weights of the new packages must stay within the `PARCEL` limit.
+        This endpoint modifies the packages in an order. The number of packages in the new package list must be the same as the original order.
       summary: Update the packages in an order.
       security:
         - OAuth2: []
@@ -610,7 +610,7 @@ definitions:
   WeightOptions:
     title: WeightOptions
     type: object
-    description: The weight of the package. Orders will be classified as `HEAVY` if any of its package are over 50lbs.
+    description: The weight of the package. Orders will be classified as `HEAVY` if the service selected is `CUSTOMER_BOOKING`.
     properties:
       weight:
         type: integer
@@ -759,7 +759,7 @@ definitions:
         type: string
         enum: *service
         default: NEXTDAY
-        description: The service of the order, which determines the price and speed of the delivery. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
+        description: The service of the order, which determines the price and speed of the delivery.
       deliveryService:
         type: string
         enum: *deliveryService
@@ -1042,7 +1042,7 @@ definitions:
           service:
             type: string
             enum: *service
-            description: The service of the order, which determines the price and speed of the delivery. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
+            description: The service of the order, which determines the price and speed of the delivery.
             example: "NEXTDAY"
           deliveryService:
             type: string
@@ -1167,7 +1167,7 @@ definitions:
         service:
           type: string
           enum: *service
-          description: A code representing the service level for the rate. `CUSTOMER_BOOKING` is the only applicable option for `HEAVY` orders.
+          description: A code representing the service level for the rate.
         name:
           type: string
           description: The human readable name for the rate.
