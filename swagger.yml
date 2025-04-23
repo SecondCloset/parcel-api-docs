@@ -501,7 +501,7 @@ definitions:
         example: H4R 2A4
       isBusinessAddress:
         type: boolean
-        description: This optional field let's us know if the recipient address is a business address. This allows us to do our best to ensure that the delivery is completed during business hours, or retrieve an alternate address from the recipient.The postal code of the address.
+        description: This optional field let's us know if the recipient address is a business address. This allows us to do our best to ensure that the delivery is completed during business hours, or retrieve an alternate address from the recipient.
         example: true
     required:
       - street
