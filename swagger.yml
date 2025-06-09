@@ -304,6 +304,7 @@ paths:
           schema:
             $ref: "#/definitions/Order"
           description: "Successful response"
+
   /orders/{id}/packages:
     x-summary: Update the packages for fields ref number, tracking number, size or weight. The number of packages cannot be updated.
     put:
@@ -329,6 +330,7 @@ paths:
       responses:
         200:
           description: "Successful response"
+
   /orders/{id}/pickupready:
     x-summary: Mark an order as ready for pickup. Also referred to as confirming an order or fulfilling an order.
     patch:
@@ -353,6 +355,32 @@ paths:
             type: object
       responses:
         200:
+          description: "Successful response"
+
+  /orders/{id}/updateOrder:
+    x-summary: Update Order Recipient
+    patch:
+      tags:
+        - "Orders"
+      description: >-
+        This endpoint updates the order's recipient and recipient address. Order must be in CREATED, GEOCODEDFAILED or OUT_OF_FSA status.
+      summary: Update Order Recipient
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+        - name: id
+          in: path
+          description: The id of the order that will be updated
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/UpdateOrderRecipientRequest"
+      responses:
+        204:
           description: "Successful response"
 
   /tracking/orders/{id}:
@@ -795,6 +823,20 @@ definitions:
         description: Array of packages on the order
         $ref: "#/definitions/Packages"
 
+  UpdateOrderRecipientRequest:
+    type: object
+    required:
+      - recipientAddress
+    properties:
+      recipient:
+        type: object
+        description: The recipient name and contact information of the order to be delivered. This field is optional.
+        $ref: "#/definitions/Recipient"
+      recipientAddress:
+        type: object
+        description: The address of the recipient.
+        $ref: "#/definitions/Address"
+
   Tracking:
     title: Tracking Response
     type: object
@@ -853,7 +895,7 @@ definitions:
               type: string
               description: |-
                 The description of the events.
-                
+
                 The `eventDescription` is a human-readable version of the `eventName` Below is a mapping of the event with its corresponding description(s).
 
                 - `CREATED`:
@@ -932,36 +974,24 @@ definitions:
               "eventDescription": "Order has been created",
               "trackingNumber": "EBWIVCXADDHW",
               "timestamp": 1668448732000,
-              "location": 
-                {
-                  "country": "CA",
-                  "province": "ON",
-                  "city": "Toronto"
-                },
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
             },
             {
               "eventName": "GEOCODED",
               "eventDescription": "Address has been validated",
               "trackingNumber": "EBWIVCXADDHW",
               "timestamp": 1668448732500,
-              "location": 
-                {
-                  "country": "CA",
-                  "province": "ON",
-                  "city": "Toronto"
-                }
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
             },
             {
               "eventName": "SHIPMENT_PROCESSING",
               "eventDescription": "The shipment for this order is underway",
               "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668448733000,
-              "location": 
-                {
-                  "country": "CA",
-                  "province": "ON",
-                  "city": "Toronto"
-                }
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
             },
             {
               "signaturePhotosUrls": [],
@@ -970,24 +1000,16 @@ definitions:
               "trackingNumber": "EBWIVCXADDHW",
               "verificationPhotosUrls": [],
               "timestamp": 1668448733000,
-              "location": 
-                {
-                  "country": "CA",
-                  "province": "ON",
-                  "city": "Toronto"
-                }
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
             },
             {
               "eventName": "OUT_FOR_DELIVERY",
               "eventDescription": "Packages are out for delivery",
               "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668461252000,
-              "location": 
-                {
-                  "country": "CA",
-                  "province": "ON",
-                  "city": "Toronto"
-                }
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
             },
             {
               "signaturePhotosUrls": [],
@@ -996,12 +1018,8 @@ definitions:
               "trackingNumber": "EBWIVCXADDHW",
               "verificationPhotosUrls": [],
               "timestamp": 1668461252000,
-              "location": 
-                {
-                  "country": "CA",
-                  "province": "ON",
-                  "city": "Toronto"
-                }
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
             },
           ],
       }
