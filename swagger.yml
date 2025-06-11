@@ -358,13 +358,13 @@ paths:
           description: "Successful response"
 
   /orders/{id}/updateOrder:
-    x-summary: Update Order Recipient
+    x-summary: Update Recipient Address
     patch:
       tags:
         - "Orders"
       description: >-
-        This endpoint updates the order's recipient and recipient address. Order must be in CREATED, GEOCODEDFAILED or OUT_OF_FSA status.
-      summary: Update Order Recipient
+        This endpoint updates the order's recipient address. Order must be in CREATED, GEOCODEDFAILED or OUT_OF_FSA status.
+      summary: Update Recipient Address
       security:
         - OAuth2: []
         - Authorization-Header: []
@@ -378,7 +378,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/UpdateOrderRecipientRequest"
+            $ref: "#/definitions/UpdateOrderRecipientAddressRequest"
       responses:
         204:
           description: "Successful response"
@@ -823,15 +823,11 @@ definitions:
         description: Array of packages on the order
         $ref: "#/definitions/Packages"
 
-  UpdateOrderRecipientRequest:
+  UpdateOrderRecipientAddressRequest:
     type: object
     required:
       - recipientAddress
     properties:
-      recipient:
-        type: object
-        description: The recipient name and contact information of the order to be delivered. This field is optional.
-        $ref: "#/definitions/Recipient"
       recipientAddress:
         type: object
         description: The address of the recipient.
