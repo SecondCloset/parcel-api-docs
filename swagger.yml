@@ -919,18 +919,28 @@ definitions:
                 - `OUT_FOR_DELIVERY`:
                   - `Package has left warehouse`
                 - `FAILED` (can be one of the following):
-                  - `Delivery unsuccessful`
-                  - `Delivery unsuccessful - loading issue`
-                  - `Delivery unsuccessful - address issue`
-                  - `Delivery attempted - customer not at home`
-                  - `Delivery attempted - business closed`
-                  - `Delivery attempted - unable to drop`
-                  - `Delivery unsuccessful - unable to access`
-                  - `Delivery unsuccessful - damaged items`
-                  - `Delivery attempted - refused by customer`
-                  - `Delivery unsuccessful - issue on route`
-                  - `Delivery unsuccessful - lost package`
-                  - `Delivery unsuccessful - return to merchant`
+                  - `Delivery Unsuccessful`
+                  - `Delivery Unsuccessful - Order Incomplete`
+                  - `Delivery Attempted - Address Issue`
+                  - `Delivery Attempted - Customer Unavailable`
+                  - `Delivery Attempted - Business is Closed`
+                  - `Delivery Unsuccessful - Unable to drop package(s)`
+                  - `Delivery Unsuccessful - Unable to access`
+                  - `Delivery Exception - Damaged Packages`
+                  - `Delivery Attempted - Customer Refused`
+                  - `Delivery Exception - Unable to complete route`
+                  - `Lost Package(s)`
+                  - `Returning to Sender`
+                  - `Delivery Exception - Damaged Upon Receiving`
+                  - `Delivery Attempted - Customer Moved`
+                  - `Delivery Unsuccessful - Address missing house or unit number`
+                  - `Delivery Attempted - Address missing buzz code`
+                  - `Delivery Unsuccessful - Address Issue`
+                  - `Delivery Unsuccessful - Unable to access gated community`
+                  - `Delivery Exception - Weather`
+                  - `Delivery Exception - Road Closure`
+                  - `Delivery Unsuccessful - Unable to complete route`
+                  - `Returning to Origin Facility`
                 - `DELIVERED`:
                   - `Package delivered`
                 - `RETURN_TO_SENDER`:
