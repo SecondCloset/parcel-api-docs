@@ -188,7 +188,7 @@ paths:
             enum:
               - ZPL
               - PDF
-              - PNG
+              - PDF_URL
               - PDF_BASE64
               - PDF_LETTER
 
