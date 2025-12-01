@@ -801,6 +801,10 @@ definitions:
         type: string
         description: A reference number from your side that we can use to contact you about the order
         example: shopifyid1234
+      secondaryRefNumber:
+        type: string
+        description: A seondary reference number from your side that we can use to contact you about the order
+        example: seoncdaryid1234
       merchantDisplayName:
         type: string
         description: A display name that's going to be shown in the order's label
@@ -1111,6 +1115,10 @@ definitions:
         type: string
         description: A reference number from your side that we can use to contact you about the order
         example: shopifyid1234
+      secondaryRefNumber:
+        type: string
+        description: A seondary reference number from your side that we can use to contact you about the order
+        example: seoncdaryid1234
       completeAfter:
         type: number
         description: epoch (milliseconds) of the beginning of pickup window (need to be later than right now)
