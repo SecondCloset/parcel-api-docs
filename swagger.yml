@@ -358,13 +358,18 @@ paths:
           description: "Successful response"
 
   /orders/{id}/updateOrder:
-    x-summary: Update Recipient Address
+    x-summary: Update Order Info
     patch:
+      operationId: updateOrderInfo
       tags:
         - "Orders"
-      description: >-
-        This endpoint updates the order's recipient address. Order must be in CREATED, GEOCODEDFAILED or OUT_OF_FSA status.
-      summary: Update Recipient Address
+      description: |
+        This endpoint updates allows updates to the following order info:
+
+        - recipient address
+        - notes
+        - deliveryService
+      summary: Update Order Info
       security:
         - OAuth2: []
         - Authorization-Header: []
@@ -378,7 +383,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: "#/definitions/UpdateOrderRecipientAddressRequest"
+            $ref: "#/definitions/UpdateOrderInfoRequest"
       responses:
         204:
           description: "Successful response"
@@ -452,7 +457,6 @@ definitions:
     type: string
     enum: &service
       - NEXTDAY
-      - SCHEDULED
       - FLEX
       - CUSTOMER_BOOKING
 
@@ -500,6 +504,13 @@ definitions:
   Address:
     title: Address
     type: object
+    description: |
+      The address of the recipient.
+
+      Note: if you're updating the address with this [endpoint](#/orders/updateorderinfo), the order must be in the following status for the update to go through:
+      - CREATED
+      - GEOCODEDFAILED
+      - OUT_OF_FSA
     properties:
       street:
         type: string
@@ -611,20 +622,20 @@ definitions:
     description: The dimensions of the package.
     properties:
       length:
-        type: integer
-        format: int32
+        type: number
+        format: float
         description: The length of the package
-        example: 20
+        example: 20.5
       width:
-        type: integer
-        format: int32
+        type: number
+        format: float
         description: The width of the package
-        example: 15
+        example: 15.25
       height:
-        type: integer
-        format: int32
+        type: number
+        format: float
         description: The height of the package
-        example: 15
+        example: 15.0
       unit:
         type: string
         description: The unit of measurement for the package. Can be either `cm` or `inch`.
@@ -641,10 +652,10 @@ definitions:
     description: The weight of the package. Orders will be classified as `HEAVY` if the service selected is `CUSTOMER_BOOKING`.
     properties:
       weight:
-        type: integer
-        format: int32
+        type: number
+        format: float
         description: The weight of the package
-        example: 20
+        example: 20.75
       unit:
         type: string
         description: |-
@@ -656,6 +667,28 @@ definitions:
     required:
       - weight
       - unit
+
+  PackageItems:
+    title: PackageItems
+    type: object
+    description: Array of items contained in the package.
+    properties:
+      productName:
+        type: string
+        description: The name of the product.
+        example: "T-shirt"
+      sku:
+        type: string
+        description: The stock keeping unit identifier for the item.
+        example: "TSHIRT-BLUE-XL"
+      quantity:
+        type: integer
+        format: int32
+        description: The quantity of the item in the package.
+        example: 2
+    required:
+      - productName
+      - quantity
 
   UpdateArrayOfPackages:
     title: Packages
@@ -712,6 +745,11 @@ definitions:
         sizeOptions:
           type: object
           $ref: "#/definitions/SizeOptions"
+        packageItems:
+          type: array
+          description: Array of items contained in the package.
+          items:
+            $ref: "#/definitions/PackageItems"
 
   Packages:
     title: Packages
@@ -738,6 +776,11 @@ definitions:
         sizeOptions:
           type: object
           $ref: "#/definitions/SizeOptions"
+        packageItems:
+          type: array
+          description: Array of items contained in the package.
+          items:
+            $ref: "#/definitions/PackageItems"
 
   GetRatesRequest:
     title: Get Rates Request
@@ -827,15 +870,33 @@ definitions:
         description: Array of packages on the order
         $ref: "#/definitions/Packages"
 
-  UpdateOrderRecipientAddressRequest:
+  UpdateOrderInfoRequest:
     type: object
-    required:
-      - recipientAddress
     properties:
       recipientAddress:
         type: object
-        description: The address of the recipient.
+        description: |
+          The address of the recipient. Order must be in the following status for the update to go through:
+          - CREATED
+          - GEOCODEDFAILED
+          - OUT_OF_FSA
         $ref: "#/definitions/Address"
+      notes:
+        type: string
+        description: Any notes related specifically to the destination address.
+        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
+      deliveryService:
+        type: string
+        enum: *deliveryService
+        default: TO_THE_DOOR
+        description: |
+          The delivery service of the order, which determines the level of service our staff provide when delivering the order. For this update to go through, the order must be NOT in the following statuses:
+          - RECEIVED_AT_DESTINATION
+          - OUT_FOR_DELIVERY
+          - DELIVERED
+          - ARCHIVED
+          - RETURN_TO_SENDER
+          - LOST
 
   Tracking:
     title: Tracking Response
@@ -1231,9 +1292,9 @@ definitions:
         estimateFrom: "2024-04-04"
         estimateTo: "2024-04-08"
       - price: 12
-        service: "SCHEDULED"
-        name: "GoBolt Scheduled Delivery"
-        description: "Get your package in a 3h window within the next 2 weeks (2019-10-29 to 2019-11-11)"
+        service: "CUSTOMER_BOOKING"
+        name: "GoBolt Customer Booking"
+        description: "Send a booking email to your customer and have them schedule a date of their choosing"
         estimateDay: "2019-10-29 to 2019-11-11"
         estimateFrom: "2019-10-29"
         estimateTo: "2019-11-11"
