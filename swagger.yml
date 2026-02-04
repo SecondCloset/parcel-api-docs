@@ -331,32 +331,6 @@ paths:
         200:
           description: "Successful response"
 
-  /orders/{id}/pickupready:
-    x-summary: Mark an order as ready for pickup. Also referred to as confirming an order or fulfilling an order.
-    patch:
-      tags:
-        - "Orders"
-      description: >-
-        This endpoint marks an order as ready for pickup. Also referred to as confirming an order or fulfilling an order.
-      summary: Mark order as ready for pickup.
-      security:
-        - OAuth2: []
-        - Authorization-Header: []
-      parameters:
-        - name: id
-          in: path
-          description: The id of the order that will be updated
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-      responses:
-        200:
-          description: "Successful response"
-
   /orders/{id}/updateOrder:
     x-summary: Update Order Info
     patch:
@@ -427,7 +401,6 @@ definitions:
       - RATE_FAILED
       - UNSUPPORTED_WEIGHT
       - GEOCODED
-      - PICKUP_READY
       - CARRIER_PICKED_UP
       - SHIPMENT_CREATED
       - SHIPMENT_PROCESSING
@@ -971,8 +944,6 @@ definitions:
                   - `Order weight is outside of the supported weight band`
                 - `GEOCODED`:
                   - `Address has been validated`
-                - `PICKUP_READY`:
-                  - `Packages are ready for pick-up`
                 - `CARRIER_PICKED_UP`:
                   - `Carrier has picked up the packages`
                 - `SHIPMENT_CREATED`:
