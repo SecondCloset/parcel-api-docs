@@ -411,6 +411,7 @@ definitions:
       - ARCHIVED
       - RETURN_TO_SENDER
       - LOST
+      - INVALID_TIMESLOT
 
   packageStatus:
     type: string
@@ -432,6 +433,7 @@ definitions:
       - NEXTDAY
       - FLEX
       - CUSTOMER_BOOKING
+      - SCHEDULED
 
   deliveryService:
     type: string
@@ -829,6 +831,17 @@ definitions:
         type: array
         description: Array of packages belonging to the order
         $ref: "#/definitions/CreateArrayOfPackages"
+      requestedScheduleDate:
+        type: string
+        description: Date of scheduled delivery in YYYY-MM-DD format. Can only be used for SCHEDULED service level.
+        example: 2024-04-04
+      requestedScheduleTimeslot:
+        type: string
+        description: Time of scheduled delivery in HH-HH format. Can only be used for SCHEDULED service level.
+        example: 11-13
+      isB2b:
+        type: boolean
+        description: Pass in as true if the order if going to a store address for b2b. Can only be used for SCHEDULED service level.
 
   OrderCreateSuccessResponse:
     title: Create Order Success Response
@@ -985,6 +998,8 @@ definitions:
                   - `Delivery cancelled`
                 - `LOST`:
                   - `Package is lost`
+                - `INVALID_TIMESLOT`:
+                  - `Timeslot is not available for the date and/or merchant`
             verificationPhotosUrls:
               type: array
               items:
