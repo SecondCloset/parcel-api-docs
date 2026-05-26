@@ -476,8 +476,8 @@ definitions:
       - phone
       - email
 
-  Address:
-    title: Address
+  RecipientAddress:
+    title: Recipient Address
     type: object
     description: |
       The address of the recipient.
@@ -516,6 +516,48 @@ definitions:
       isBusinessAddress:
         type: boolean
         description: This optional field let's us know if the recipient address is a business address. This allows us to do our best to ensure that the delivery is completed during business hours, or retrieve an alternate address from the recipient.
+        example: true
+    required:
+      - street
+      - city
+      - province
+      - country
+      - postalCode
+
+  OriginAddress:
+    title: Origin Address
+    type: object
+    description: The address where the order should be picked up from.
+    properties:
+      street:
+        type: string
+        description: The street number and street name of the address. If needed, the street number postfix can be included as well.
+        example: 4455A Boul. Poirier
+        maxLength: 82
+      unit:
+        type: string
+        description: The unit, apartment and/or business name of the address. This property is not parsed during the geolocation of the address and can be descriptive.
+        example: unit204 - GoBolt HQ
+        maxLength: 30
+      city:
+        type: string
+        description: The city or municipality of the address.
+        example: Montreal
+      province:
+        type: string
+        description: The province of the address. Can be written in short form (i.e. QC)
+        example: Quebec
+      country:
+        type: string
+        description: The country of the address. Can be written in short form (i.e. CA)
+        example: Canada
+      postalCode:
+        type: string
+        description: The postal code of the address.
+        example: H4R 2A4
+      isBusinessAddress:
+        type: boolean
+        description: This optional field let's us know if the origin address is a business address. This allows us to do our best to ensure that the pickup is completed during business hours, or retrieve an alternate address from the sender.
         example: true
     required:
       - street
@@ -791,11 +833,11 @@ definitions:
       recipientAddress:
         type: object
         description: The address of the recipient.
-        $ref: "#/definitions/Address"
+        $ref: "#/definitions/RecipientAddress"
       originAddress:
         type: object
         description: The address of where the order should be picked up from
-        $ref: "#/definitions/Address"
+        $ref: "#/definitions/OriginAddress"
       packageCount:
         type: integer
         format: int32
@@ -866,7 +908,7 @@ definitions:
           - CREATED
           - GEOCODEDFAILED
           - OUT_OF_FSA
-        $ref: "#/definitions/Address"
+        $ref: "#/definitions/RecipientAddress"
       notes:
         type: string
         description: Any notes related specifically to the destination address.
