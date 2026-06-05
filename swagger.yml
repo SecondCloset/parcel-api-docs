@@ -229,6 +229,33 @@ paths:
           description: ""
           schema:
             $ref: "#/definitions/OrderCreateSuccessResponse"
+
+  /returns:
+    x-summary: Returns
+    post:
+      tags:
+        - "Orders"
+      description: >-
+        This endpoint creates a new return to be picked up by GoBolt. For returns, `originAddress` is the address
+        the order should be returned to, and `recipientAddress` is the address the order should be picked up from.
+        This operation is treated as a long running task. As soon as your request is validated, you will receive
+        a `200 OK` response with the order `id` while processing continues in the background.
+      summary: Create a New Return
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ReturnCreateRequest"
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: "#/definitions/OrderCreateSuccessResponse"
+
     get:
       tags:
         - "Orders"
@@ -524,6 +551,24 @@ definitions:
       - country
       - postalCode
 
+  ReturnPickupAddress:
+    title: Return Pickup Address
+    description: |
+      The address the order should be picked up from (i.e. the customer's address).
+
+      Note: if you're updating the address with this [endpoint](#/orders/updateorderinfo), the order must be in the following status for the update to go through:
+      - CREATED
+      - GEOCODEDFAILED
+      - OUT_OF_FSA
+    allOf:
+      - $ref: "#/definitions/RecipientAddress"
+
+  ReturnDestinationAddress:
+    title: Return Destination Address
+    description: The address the order should be returned to (i.e. the merchant's address).
+    allOf:
+      - $ref: "#/definitions/OriginAddress"
+
   OriginAddress:
     title: Origin Address
     type: object
@@ -806,7 +851,7 @@ definitions:
       - postalCode
     properties:
       postalCode:
-        description: The postal code of the recipient of the order
+        description: The postal code of the recipient/customer of the order
         type: string
         example: "H4X1Z5"
       originPostalCode:
@@ -816,6 +861,11 @@ definitions:
       packages:
         type: array
         $ref: "#/definitions/CreateArrayOfPackages"
+      isReturn:
+        type: boolean
+        description: Set to `true` to retrieve rates for a return.
+        default: false
+        example: false
 
   OrderCreateRequest:
     type: object
@@ -884,6 +934,73 @@ definitions:
       isB2b:
         type: boolean
         description: Pass in as true if the order if going to a store address for b2b. Can only be used for SCHEDULED service level.
+
+  ReturnCreateRequest:
+    title: Create Return Request
+    type: object
+    required:
+      - recipient
+      - recipientAddress
+      - originAddress
+      - packageCount
+      - packages
+    properties:
+      recipient:
+        type: object
+        description: The recipient of the return (i.e. the merchant the order is being returned to).
+        $ref: "#/definitions/Recipient"
+      recipientAddress:
+        type: object
+        $ref: "#/definitions/ReturnPickupAddress"
+      originAddress:
+        type: object
+        $ref: "#/definitions/ReturnDestinationAddress"
+      packageCount:
+        type: integer
+        format: int32
+        description: The number of separate packages to be picked up for this return, up to a maximum of 20.
+        example: 1
+      service:
+        type: string
+        enum: *service
+        default: NEXTDAY
+        description: The service of the return, which determines the price and speed of the pickup.
+      deliveryService:
+        type: string
+        enum: *deliveryService
+        default: TO_THE_DOOR
+        description: The delivery service of the return, which determines the level of service our staff provide when picking up the order. Mandatory when `CUSTOMER_BOOKING` service is selected.
+      notes:
+        type: string
+        description: Any notes related specifically to the pickup address.
+        example: The entrance is through the green fence on the left. If no answer, leave behind the black bin.
+      refNumber:
+        type: string
+        description: A reference number from your side that we can use to contact you about the return
+        example: shopifyid1234
+      secondaryRefNumber:
+        type: string
+        description: A secondary reference number from your side that we can use to contact you about the return
+        example: secondaryid1234
+      merchantDisplayName:
+        type: string
+        description: A display name that's going to be shown in the return's label
+        example: Metro Fleury No 2
+      packages:
+        type: array
+        description: Array of packages belonging to the return
+        $ref: "#/definitions/CreateArrayOfPackages"
+      requestedScheduleDate:
+        type: string
+        description: Date of scheduled pickup in YYYY-MM-DD format. Can only be used for SCHEDULED service level.
+        example: 2024-04-04
+      requestedScheduleTimeslot:
+        type: string
+        description: Time of scheduled pickup in HH-HH format. Can only be used for SCHEDULED service level.
+        example: 11-13
+      isB2b:
+        type: boolean
+        description: Pass in as true if the return is being picked up from a store address for b2b. Can only be used for SCHEDULED service level.
 
   OrderCreateSuccessResponse:
     title: Create Order Success Response
