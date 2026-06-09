@@ -891,7 +891,7 @@ definitions:
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packages to be delivered for this order, up to a maximum of 20.
+        description: The number of separate packages to be delivered for this order, up to a maximum of 25.
         example: 1
       service:
         type: string
@@ -958,7 +958,7 @@ definitions:
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packages to be picked up for this return, up to a maximum of 20.
+        description: The number of separate packages to be picked up for this return, up to a maximum of 25.
         example: 1
       service:
         type: string
@@ -1058,7 +1058,7 @@ definitions:
         description: The order's id.
       packageCount:
         type: number
-        description: The number of packages in the order, up to a maximum of 20.
+        description: The number of packages in the order, up to a maximum of 25.
       packageNumbers:
         type: array
         description: Array of package tracking numbers on the order
@@ -1307,7 +1307,7 @@ definitions:
       packageCount:
         type: integer
         format: int32
-        description: The number of separate packages to be delivered for this order, up to a maximum of 20.
+        description: The number of separate packages to be delivered for this order, up to a maximum of 25.
         example: 1
       packages:
         type: array
