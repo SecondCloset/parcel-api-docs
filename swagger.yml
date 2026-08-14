@@ -425,7 +425,11 @@ definitions:
       - CREATED
       - GEOCODEDFAILED
       - OUT_OF_FSA
+      - ORIGIN_NOT_SUPPORTED
+      - OUT_OF_DESTINATION_FSA
       - RATE_FAILED
+      - UNSUPPORTED_SERVICE
+      - UNSUPPORTED_DELIVERY_SERVICE
       - UNSUPPORTED_WEIGHT
       - GEOCODED
       - CARRIER_PICKED_UP
@@ -513,6 +517,7 @@ definitions:
       - CREATED
       - GEOCODEDFAILED
       - OUT_OF_FSA
+      - OUT_OF_DESTINATION_FSA
     properties:
       street:
         type: string
@@ -560,6 +565,7 @@ definitions:
       - CREATED
       - GEOCODEDFAILED
       - OUT_OF_FSA
+      - OUT_OF_DESTINATION_FSA
     allOf:
       - $ref: "#/definitions/RecipientAddress"
 
@@ -1025,6 +1031,7 @@ definitions:
           - CREATED
           - GEOCODEDFAILED
           - OUT_OF_FSA
+          - OUT_OF_DESTINATION_FSA
         $ref: "#/definitions/RecipientAddress"
       notes:
         type: string
@@ -1110,8 +1117,16 @@ definitions:
                   - `Address validation unsuccessful`
                 - `OUT_OF_FSA`:
                   - `Address is out of service area`
+                - `ORIGIN_NOT_SUPPORTED`:
+                  - `Origin postal code is not supported for this merchant`
+                - `OUT_OF_DESTINATION_FSA`:
+                  - `Destination address is not in a configured shipping zone`
                 - `RATE_FAILED`:
                   - `Rates for this order could not be generated`
+                - `UNSUPPORTED_SERVICE`:
+                  - `Requested service is not available for this route`
+                - `UNSUPPORTED_DELIVERY_SERVICE`:
+                  - `Requested delivery service is not available for this route`
                 - `UNSUPPORTED_WEIGHT`:
                   - `Order weight is outside of the supported weight band`
                 - `GEOCODED`:
