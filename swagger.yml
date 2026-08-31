@@ -164,6 +164,28 @@ paths:
           description: ""
           schema:
             $ref: "#/definitions/ArrayOfRates"
+  /services:
+    x-summary: Services
+    get:
+      tags:
+        - "Rates"
+      description: >-
+        This endpoint returns every service level GoBolt can quote, so you can discover the valid
+        values for the `service` field without having to hardcode them. It is a catalogue of what
+        this carrier supports, not a per-shipment answer: which of these services is actually
+        available for a given order depends on the merchant, the origin and the destination. To
+        create an order, call `POST /rates` with the origin and destination postal codes (and
+        `isReturn: true` if this is a return) to get the services actually available for that
+        shipment, and use one of those `service` values on `POST /orders`.
+      summary: Retrieve Available Services
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      responses:
+        200:
+          description: ""
+          schema:
+            $ref: "#/definitions/ArrayOfServices"
   /labels/{orderId}:
     x-summary: Labels
     get:
@@ -495,6 +517,7 @@ definitions:
     type: string
     enum: &service
       - NEXTDAY
+      - SAMEDAY
       - FLEX
       - CUSTOMER_BOOKING
       - SCHEDULED
@@ -1548,6 +1571,30 @@ definitions:
         type: string
         description: A refresh token which your application can use to obtain another access token.
         example: "xzzf-j_37pZmRW2SixZPzCVC8aGo21U5"
+
+  ArrayOfServices:
+    type: array
+    items:
+      type: object
+      properties:
+        code:
+          type: string
+          enum: *service
+          description: The service level code, as accepted by the `service` field on order creation.
+        name:
+          type: string
+          description: The human readable name for the service level.
+    example:
+      - code: "NEXTDAY"
+        name: "Next Day Delivery"
+      - code: "SAMEDAY"
+        name: "Same Day Delivery"
+      - code: "FLEX"
+        name: "Flex Delivery"
+      - code: "CUSTOMER_BOOKING"
+        name: "Customer Booking"
+      - code: "SCHEDULED"
+        name: "Scheduled Delivery"
 
   ArrayOfRates:
     type: array
