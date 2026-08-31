@@ -1310,7 +1310,7 @@ definitions:
               description: This package's tracking number, or the order id for the inherited baseline CREATED event.
             eventDescription:
               type: string
-              description: Human-readable version of `eventName` - see the `Tracking` response's `timeline.eventDescription` for the full event-to-description mapping.
+              description: Human-readable version of `eventName` - see the `Tracking` response's `timeline.eventDescription` for the full event-to-description mapping, except `CREATED`, which reads `Package has been created` here (rather than `Order has been created`) since this is a package-scoped timeline.
             verificationPhotosUrls:
               type: array
               items:
@@ -1335,7 +1335,7 @@ definitions:
           [
             {
               "eventName": "CREATED",
-              "eventDescription": "Order has been created",
+              "eventDescription": "Package has been created",
               "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668448732000,
               "location":
