@@ -425,8 +425,12 @@ definitions:
       - CREATED
       - GEOCODEDFAILED
       - OUT_OF_FSA
+      - ORIGIN_NOT_SUPPORTED
+      - OUT_OF_DESTINATION_FSA
       - RATE_FAILED
       - UNSUPPORTED_WEIGHT
+      - UNSUPPORTED_SERVICE
+      - UNSUPPORTED_DELIVERY_SERVICE
       - GEOCODED
       - CARRIER_PICKED_UP
       - SHIPMENT_CREATED
@@ -439,6 +443,10 @@ definitions:
       - RETURN_TO_SENDER
       - LOST
       - INVALID_TIMESLOT
+      - RETURN_SCHEDULED
+      - RETURN_OUT_FOR_PICKUP
+      - RETURN_PICKED_UP
+      - RETURNED
 
   packageStatus:
     type: string
@@ -453,6 +461,10 @@ definitions:
       - ARCHIVED
       - RETURN_TO_SENDER
       - LOST
+      - RETURN_SCHEDULED
+      - RETURN_OUT_FOR_PICKUP
+      - RETURN_PICKED_UP
+      - RETURNED
 
   service:
     type: string
@@ -513,6 +525,7 @@ definitions:
       - CREATED
       - GEOCODEDFAILED
       - OUT_OF_FSA
+      - OUT_OF_DESTINATION_FSA
     properties:
       street:
         type: string
@@ -560,6 +573,7 @@ definitions:
       - CREATED
       - GEOCODEDFAILED
       - OUT_OF_FSA
+      - OUT_OF_DESTINATION_FSA
     allOf:
       - $ref: "#/definitions/RecipientAddress"
 
@@ -1025,6 +1039,7 @@ definitions:
           - CREATED
           - GEOCODEDFAILED
           - OUT_OF_FSA
+          - OUT_OF_DESTINATION_FSA
         $ref: "#/definitions/RecipientAddress"
       notes:
         type: string
@@ -1042,6 +1057,9 @@ definitions:
           - ARCHIVED
           - RETURN_TO_SENDER
           - LOST
+          - RETURN_SCHEDULED
+          - RETURN_OUT_FOR_PICKUP
+          - RETURN_PICKED_UP
 
   Tracking:
     title: Tracking Response
@@ -1110,10 +1128,18 @@ definitions:
                   - `Address validation unsuccessful`
                 - `OUT_OF_FSA`:
                   - `Address is out of service area`
+                - `ORIGIN_NOT_SUPPORTED`:
+                  - `Origin postal code is not supported for this merchant`
+                - `OUT_OF_DESTINATION_FSA`:
+                  - `Destination address is not in a configured shipping zone`
                 - `RATE_FAILED`:
                   - `Rates for this order could not be generated`
                 - `UNSUPPORTED_WEIGHT`:
                   - `Order weight is outside of the supported weight band`
+                - `UNSUPPORTED_SERVICE`:
+                  - `Requested service level is not available for this route`
+                - `UNSUPPORTED_DELIVERY_SERVICE`:
+                  - `Requested delivery service is not available for this route`
                 - `GEOCODED`:
                   - `Address has been validated`
                 - `CARRIER_PICKED_UP`:
@@ -1151,14 +1177,23 @@ definitions:
                   - `Returning to Origin Facility`
                 - `DELIVERED`:
                   - `Package delivered`
-                - `RETURN_TO_SENDER`:
+                - `RETURN_TO_SENDER` (can be one of the following):
                   - `Returning package to merchant`
+                  - `Returning package to origin facility`
                 - `ARCHIVED`:
                   - `Delivery cancelled`
                 - `LOST`:
                   - `Package is lost`
                 - `INVALID_TIMESLOT`:
                   - `Timeslot is not available for the date and/or merchant`
+                - `RETURN_SCHEDULED`:
+                  - `Return pickup has been scheduled`
+                - `RETURN_OUT_FOR_PICKUP`:
+                  - `Driver is on the way to pick up the return`
+                - `RETURN_PICKED_UP`:
+                  - `Return has been picked up from the customer`
+                - `RETURNED`:
+                  - `Return has been delivered back to the warehouse`
             verificationPhotosUrls:
               type: array
               items:
