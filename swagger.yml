@@ -418,6 +418,31 @@ paths:
             $ref: "#/definitions/Tracking"
           description: "Success tracking response"
 
+  /tracking/packages/{trackingNumber}:
+    x-summary: Get the status of a single package by its tracking number.
+    get:
+      tags:
+        - "Tracking"
+      description: >-
+        This endpoint returns the status of a single package, looked up by its own tracking number, without requiring the whole parent order or its aggregate status. Unlike `/tracking/orders/{id}`, this endpoint accepts a package tracking number only - an order id is not a valid input and returns a 404.
+      summary: Get the tracking status of a single package by tracking number.
+      security:
+        - OAuth2: []
+        - Authorization-Header: []
+      parameters:
+        - name: trackingNumber
+          in: path
+          description: The tracking number of the package for which status is being requested.
+          required: true
+          type: string
+      responses:
+        200:
+          schema:
+            $ref: "#/definitions/PackageTracking"
+          description: "Success tracking response"
+        404:
+          description: "No package exists with this tracking number."
+
 definitions:
   orderStatus:
     type: string
@@ -1074,6 +1099,9 @@ definitions:
       id:
         type: string
         description: The order's id.
+      orderId:
+        type: string
+        description: The order's id. Same value as `id`.
       packageCount:
         type: number
         description: The number of packages in the order, up to a maximum of 20.
@@ -1211,6 +1239,7 @@ definitions:
     example:
       {
         "id": "EBWIVCXADDHW",
+        "orderId": "EBWIVCXADDHW",
         "packageCount": 1,
         "packageNumbers": ["OKWIVCXADDHW"],
         "status": "OUT_FOR_DELIVERY",
@@ -1268,6 +1297,97 @@ definitions:
               "eventDescription": "Packages are out for delivery",
               "trackingNumber": "EBWIVCXADDHW",
               "verificationPhotosUrls": [],
+              "timestamp": 1668461252000,
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
+            },
+          ],
+      }
+
+  PackageTracking:
+    title: Package Tracking Response
+    type: object
+    required:
+      - trackingNumber
+      - orderId
+      - status
+    properties:
+      trackingNumber:
+        type: string
+        description: The tracking number of the package.
+      orderId:
+        type: string
+        description: The id of the order this package belongs to.
+      status:
+        type: string
+        description: >-
+          The package's own current status - not the order's aggregate status. One of the
+          `packageStatus` values once the package has a tracking event of its own; `CREATED` as a
+          baseline before that, reflecting only that the package's parent order has been created.
+      updatedAt:
+        type: number
+        description: Epoch millisecond timestamp of this package's most recent status change. Absent if the package's timeline is empty.
+      timeline:
+        type: array
+        description: This package's own tracking events only, oldest first. Always includes at least the order's CREATED event as a baseline.
+        items:
+          type: object
+          properties:
+            timestamp:
+              type: number
+              description: Epoch millisecond timestamp of when the event took place.
+            eventName:
+              type: string
+              enum: *orderStatus
+              description: Name of the event
+            trackingNumber:
+              type: string
+              description: This package's tracking number, or the order id for the inherited baseline CREATED event.
+            eventDescription:
+              type: string
+              description: Human-readable version of `eventName` - see the `Tracking` response's `timeline.eventDescription` for the full event-to-description mapping, except `CREATED`, which reads `Package has been created` here (rather than `Order has been created`) since this is a package-scoped timeline.
+            verificationPhotosUrls:
+              type: array
+              items:
+                type: string
+              description: A list of URLs to download the proof of delivery images. This value is only present when the event is `DELIVERED`.
+            signaturePhotosUrls:
+              type: array
+              items:
+                type: string
+              description: A list of URLs to download the delivery customer signature images. This value is only present when the event is `DELIVERED`.
+            location:
+              type: object
+              description: The general location of where the event took place.
+              $ref: "#/definitions/LocationSummary"
+    example:
+      {
+        "trackingNumber": "OKWIVCXADDHW",
+        "orderId": "EBWIVCXADDHW",
+        "status": "OUT_FOR_DELIVERY",
+        "updatedAt": 1668461252000,
+        "timeline":
+          [
+            {
+              "eventName": "CREATED",
+              "eventDescription": "Package has been created",
+              "trackingNumber": "OKWIVCXADDHW",
+              "timestamp": 1668448732000,
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
+            },
+            {
+              "eventName": "SHIPMENT_PROCESSING",
+              "eventDescription": "The shipment for this order is underway",
+              "trackingNumber": "OKWIVCXADDHW",
+              "timestamp": 1668448733000,
+              "location":
+                { "country": "CA", "province": "ON", "city": "Toronto" },
+            },
+            {
+              "eventName": "OUT_FOR_DELIVERY",
+              "eventDescription": "Packages are out for delivery",
+              "trackingNumber": "OKWIVCXADDHW",
               "timestamp": 1668461252000,
               "location":
                 { "country": "CA", "province": "ON", "city": "Toronto" },
