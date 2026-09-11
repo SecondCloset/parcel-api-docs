@@ -1,0 +1,26 @@
+# Validates swagger.yml before it reaches main. Nothing else in this repo checks the
+# spec, and the docs site is published straight from it — a malformed spec would
+# otherwise be visible only after it broke the site.
+#
+# .redocly.lint-ignore.yaml baselines the 35 problems the spec already had when this
+# check was added (8 errors, 27 warnings), so the check is green today and turns red on
+# NEW breakage. Clearing entries from that file is how the existing debt gets paid down;
+# never regenerate it to silence a problem this PR introduced.
+name: check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  swagger:
+    name: swagger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Validate swagger.yml parses as OpenAPI
+        run: npx --yes @redocly/cli@1 lint swagger.yml --format=stylish

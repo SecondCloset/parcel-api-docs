@@ -1,0 +1,43 @@
+# This file instructs Redocly's linter to ignore the rules contained for specific parts of your API.
+# See https://redocly.com/docs/cli/ for more information.
+swagger.yml:
+  struct:
+    - '#/components'
+    - '#/info/x-logo/background'
+    - '#/paths/~1labels~1{orderId}/get/parameters/0'
+    - '#/paths/~1labels~1{orderId}/get/parameters/1'
+  info-license:
+    - '#/info'
+  operation-operationId:
+    - '#/paths/~1users~1service/post/operationId'
+    - '#/paths/~1oauth~1token/post/operationId'
+    - '#/paths/~1rates/post/operationId'
+    - '#/paths/~1services/get/operationId'
+    - '#/paths/~1labels~1{orderId}/get/operationId'
+    - '#/paths/~1orders/post/operationId'
+    - '#/paths/~1returns/get/operationId'
+    - '#/paths/~1returns/post/operationId'
+    - '#/paths/~1orders~1{id}/get/operationId'
+    - '#/paths/~1orders~1{id}/delete/operationId'
+    - '#/paths/~1orders~1{id}~1packages/put/operationId'
+    - '#/paths/~1tracking~1orders~1{id}/get/operationId'
+    - '#/paths/~1tracking~1packages~1{trackingNumber}/get/operationId'
+  operation-4xx-response:
+    - '#/paths/~1users~1service/post/responses'
+    - '#/paths/~1oauth~1token/post/responses'
+    - '#/paths/~1rates/post/responses'
+    - '#/paths/~1services/get/responses'
+    - '#/paths/~1labels~1{orderId}/get/responses'
+    - '#/paths/~1orders/post/responses'
+    - '#/paths/~1returns/get/responses'
+    - '#/paths/~1returns/post/responses'
+    - '#/paths/~1orders~1{id}/get/responses'
+    - '#/paths/~1orders~1{id}/delete/responses'
+    - '#/paths/~1orders~1{id}~1packages/put/responses'
+    - '#/paths/~1orders~1{id}~1updateOrder/patch/responses'
+    - '#/paths/~1tracking~1orders~1{id}/get/responses'
+  security-defined:
+    - '#/paths/~1users~1service/post/security/0/Oauth2'
+    - '#/paths/~1rates/post/security/0/Oauth2'
+    - '#/paths/~1labels~1{orderId}/get/security/0/Oauth2'
+    - '#/paths/~1oauth~1token/post'

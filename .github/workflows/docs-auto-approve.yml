@@ -1,0 +1,116 @@
+# docs-auto-approver — approves documentation-only PRs on enrolled repositories,
+# posting as the GoBolt CI Bot.
+#
+# Source of truth (agent code + enrollment + rules) is SecondCloset/agent-hub
+# (agents/docs-auto-approver/). This file is just the installed trigger: it checks out
+# agent-hub and runs the agent. INSTALL = copy this file VERBATIM into the target
+# repo's .github/workflows/ — it is repo-agnostic, so do NOT edit it per-repo (any
+# edit just makes the installed copies drift). Runbook: SETUP.md.
+#
+# Installing this file grants NOTHING on its own. The agent approves only on repos
+# listed in agents/docs-auto-approver/repo_enrollment.json on agent-hub main, which
+# is CODEOWNERS-protected. A repo that installs the workflow without being enrolled
+# gets a silent no-op on every PR.
+#
+# Required credentials:
+#   GOBOLT_CI_BOT_CLIENT_ID   - org VARIABLE (all repositories), the app's Client ID.
+#                               NOT the numeric app id: create-github-app-token@v3
+#                               deprecated `app-id` in favour of `client-id`.
+#   PR_APPROVER_PRIVATE_KEY   - org SECRET, scoped per repo; the app's .pem contents
+# The GoBolt CI Bot app must also be installed on the target repo (+ agent-hub for the
+# checkout), with Contents: Read and write — a bot's approval only counts toward a
+# required review if it has that permission.
+#
+# Model access needs NO secret: the workflow authenticates to Google Vertex AI via
+# Workload Identity Federation (keyless OIDC). A repo whose approval rubric is empty
+# never calls a model at all.
+#
+# Trigger: a PR is opened, or new commits are pushed to it (synchronize/reopened).
+# The org's SOC2 ruleset sets dismiss_stale_reviews_on_push, so every new head needs a
+# fresh approval — act() dedups on the head SHA, so a repeated event on the same SHA
+# is a no-op while a fix push re-approves the new one.
+#
+# These repos' rulesets require NO status check to merge, so this agent's approval is
+# the last gate. It therefore gates on CI itself: it waits for the PR's other checks to
+# finish (bounded, inside the agent) and refuses to approve if any of them failed.
+
+name: docs-auto-approve
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read # default token only; the App token below does the PR actions
+  id-token: write # lets the workflow mint a GitHub OIDC token for Google WIF
+
+jobs:
+  # This is a convenience approver, NOT a CI gate — it must never block a merge.
+  # Two things enforce that here, independent of any branch-protection config:
+  #   - the job is named for the agent (not "review"), so the check is identifiable
+  #     and doesn't masquerade as a code-review gate in the PR's checks list;
+  #   - every step has continue-on-error, so the check stays green even before the
+  #     app/secrets are set up, on a fork PR, or if Vertex is down. A failed run just
+  #     means "no auto-approval — a human reviews," the safe fallback.
+  docs-auto-approve:
+    # Skip PRs from forks: they can't access the secrets to mint the app token, and
+    # we never auto-approve external-fork PRs. head.repo == base.repo means same-repo.
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      # Mint a short-lived installation token for the GoBolt CI Bot app, scoped to the
+      # two repos it needs: this repo (act on the PR) + agent-hub (clone).
+      - name: Mint app token
+        id: app-token
+        continue-on-error: true
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.GOBOLT_CI_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.PR_APPROVER_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+            agent-hub
+
+      # No ref: — always agent-hub's default branch, so the installing repo cannot pin
+      # an older agent-hub to get a stale enrollment list.
+      - name: Check out agent-hub (agent + runner)
+        continue-on-error: true
+        uses: actions/checkout@v7
+        with:
+          repository: SecondCloset/agent-hub
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/setup-node@v7
+        continue-on-error: true
+        with:
+          node-version: 24 # runs .ts directly via native type stripping
+
+      - run: npm ci
+        continue-on-error: true
+
+      # Exchange the workflow's OIDC token for short-lived GCP credentials
+      # (Application Default Credentials) — the Vertex SDK picks them up.
+      - name: Authenticate to Google Cloud
+        continue-on-error: true
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/1022985437136/locations/global/workloadIdentityPools/github/providers/github-actions
+          service_account: agent-hub@ai-production-500915.iam.gserviceaccount.com
+
+      - name: Run docs-auto-approver
+        continue-on-error: true
+        env:
+          ANTHROPIC_VERTEX_PROJECT_ID: ai-production-500915
+          CLOUD_ML_REGION: global
+          # Post as the bot via the App token — NOT the default GITHUB_TOKEN (its
+          # approvals don't count and it would be "the author").
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          # From the event, not a workflow input — the installing repo cannot spoof
+          # which enrollment entry it matches.
+          PR_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # Optional traffic metric (agent_hub.agent.run) — the agent no-ops
+          # telemetry when the secret isn't scoped to this repo.
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        run: node agents/docs-auto-approver/run.ts
