@@ -475,6 +475,8 @@ definitions:
       - ORIGIN_NOT_SUPPORTED
       - OUT_OF_DESTINATION_FSA
       - RATE_FAILED
+      - UNSUPPORTED_SERVICE
+      - UNSUPPORTED_DELIVERY_SERVICE
       - UNSUPPORTED_WEIGHT
       - UNSUPPORTED_SERVICE
       - UNSUPPORTED_DELIVERY_SERVICE
@@ -1185,6 +1187,10 @@ definitions:
                   - `Destination address is not in a configured shipping zone`
                 - `RATE_FAILED`:
                   - `Rates for this order could not be generated`
+                - `UNSUPPORTED_SERVICE`:
+                  - `Requested service is not available for this route`
+                - `UNSUPPORTED_DELIVERY_SERVICE`:
+                  - `Requested delivery service is not available for this route`
                 - `UNSUPPORTED_WEIGHT`:
                   - `Order weight is outside of the supported weight band`
                 - `UNSUPPORTED_SERVICE`:
