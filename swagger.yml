@@ -20,12 +20,12 @@ info:
       
     In this step, you will exchange your user account credentials (email & password) for service account credentials. There are two ways of doing so:
       
-      1. Using the [Create A Service Account](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1users~1service/post) API
+      1. Using the [Create A Service Account](#tag/Service-Accounts-and-Tokens/paths/~1users~1service/post) API
       2. Using the [GoBolt Parcel Portal](https://www.parcel-stage.gobolt.com/serviceUser)
         
     #### 2. Use your service user to obtain an access token
       
-    Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service account's client_id (username) and client_secret(password) for a token.
+    Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](#tag/Service-Accounts-and-Tokens/paths/~1oauth~1token/post) API, you will be able to exchange your service account's client_id (username) and client_secret(password) for a token.
       
     #### 3. Send the access token to our APIs
       
@@ -81,12 +81,12 @@ securityDefinitions:
 
       In this step, you will exchange your user account credentials (email & password) for service account credentials. There are two ways of doing so:
 
-        1. Using the [Create A Service Account](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1users~1service/post) API
+        1. Using the [Create A Service Account](#tag/Service-Accounts-and-Tokens/paths/~1users~1service/post) API
         2. Using the [GoBolt Parcel Portal](https://www.demo.boxknight.com/serviceUser)
         
       #### 2. Use your service user to obtain an access token
 
-      Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](https://hasan-ahmed.github.io/parcel-api-docs/#tag/Service-Accounts-and-Tokens/paths/~1auth~1token/post) API, you will be able to exchange your service account's client_id (username) and client_secret(password) for a token.
+      Next, to access GoBolt Parcel APIs, your client application must use a service account created in Step 1 to obtain an `access_token`. By calling the [Request Access Token](#tag/Service-Accounts-and-Tokens/paths/~1oauth~1token/post) API, you will be able to exchange your service account's client_id (username) and client_secret(password) for a token.
 
       #### 3. Send the access token to our APIs
 
