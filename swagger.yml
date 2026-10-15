@@ -1137,12 +1137,16 @@ definitions:
         type: string
         enum: *orderStatus
         description: The status of the order.
+      estimatedDeliveryDate:
+        type: string
+        description: The expected delivery date in YYYY-MM-DD format, in the local time of the delivery address. This value is not based on a real-time ETA, but is the estimate from the order's rate. Use this field instead of `completeAfter` and `completeBefore`.
+        example: 2022-11-14
       completeAfter:
         type: number
-        description: Epoch millisecond timestamp of the start of the expected delivery window. This value is not based on a real-time ETA, but is calculated based on the merchant SLAs.
+        description: "**Deprecated** - use `estimatedDeliveryDate`. Epoch millisecond timestamp of the start of the expected delivery window. Only returned for orders that were created with a delivery window; new orders do not have one."
       completeBefore:
         type: number
-        description: Epoch millisecond timestamp of the end of the expected delivery window. This value is not based on a real-time ETA, but is calculated based on the merchant SLAs.
+        description: "**Deprecated** - use `estimatedDeliveryDate`. Epoch millisecond timestamp of the end of the expected delivery window. Only returned for orders that were created with a delivery window; new orders do not have one."
       positionInLine:
         type: number
         description: The position of this delivery in the driver's route. This is equivalent to `number of stops remaining`. This value is only populated if the status is `OUT_FOR_DELIVERY`.
@@ -1266,8 +1270,7 @@ definitions:
         "packageCount": 1,
         "packageNumbers": ["OKWIVCXADDHW"],
         "status": "OUT_FOR_DELIVERY",
-        "completeAfter": 1668448800000,
-        "completeBefore": 1668481200000,
+        "estimatedDeliveryDate": "2022-11-14",
         "positionInLine": 1,
         "location": { "lng": -73.49683816091526, "lat": 45.511423360443466 },
         "timeline":
