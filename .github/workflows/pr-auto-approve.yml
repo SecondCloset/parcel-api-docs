@@ -1,0 +1,63 @@
+name: pr-auto-approve
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: pr-auto-approve-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-auto-approve:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mint app token
+        id: app-token
+        continue-on-error: true
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.GOBOLT_CI_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.PR_APPROVER_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+            agent-hub
+
+      - name: Check out agent-hub (agent + runner)
+        continue-on-error: true
+        uses: actions/checkout@v7
+        with:
+          repository: SecondCloset/agent-hub
+          token: ${{ steps.app-token.outputs.token }}
+
+      - uses: actions/setup-node@v7
+        continue-on-error: true
+        with:
+          node-version: 24
+
+      - run: npm ci
+        continue-on-error: true
+
+      - name: Authenticate to Google Cloud
+        continue-on-error: true
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/1022985437136/locations/global/workloadIdentityPools/github/providers/github-actions
+          service_account: agent-hub@ai-production-500915.iam.gserviceaccount.com
+
+      - name: Run pr-auto-approver
+        continue-on-error: true
+        env:
+          ANTHROPIC_VERTEX_PROJECT_ID: ai-production-500915
+          CLOUD_ML_REGION: global
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        run: node agents/pr-auto-approver/run.ts
