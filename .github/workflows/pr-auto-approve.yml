@@ -56,6 +56,7 @@ jobs:
         env:
           ANTHROPIC_VERTEX_PROJECT_ID: ai-production-500915
           CLOUD_ML_REGION: global
+          AGENT_HUB_OPENROUTER_API_KEY: ${{ secrets.AGENT_HUB_OPENROUTER_API_KEY }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
